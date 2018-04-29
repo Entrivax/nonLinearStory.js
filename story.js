@@ -2,7 +2,7 @@
     $(document).ready(function() {
         var story = new NLSStory([
             new NLSStep('startStep', [
-                'Bienvenue dans ce jeu !',
+                function (story) { return 'Bienvenue dans ce jeu ! Vous l\'avez terminé ' + story['jeuTerminé'] + ' fois et commencé ' + story['jeuCommencé'] + ' fois.' },
                 new NLSAction('Cliquez ici pour commencer le jeu.', 'step1', function(story) {
                     story['jeuCommencé'] += 1;
                 }),
