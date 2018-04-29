@@ -1,4 +1,9 @@
 ;(function($) {
+    'use strict';
+
+    if (!$) {
+        return console.warn('jQuery not detected!');
+    }
 
     function NonLinearStory(element, story, initialStep) {
         var _self = this;
@@ -82,7 +87,7 @@
             }
         });
     }
-})(jQuery);
+})(window.jQuery);
 
 /**
  * Describe an action of an NLHStep
@@ -103,7 +108,7 @@ function NLSAction(displayedName, goToStep, onClick) {
  * Describe a step of an NLSStory
  * @constructor NLHStep
  * @param {string} name The name of the step
- * @param {string[]|function(NLSStory)[]|NLSAction[]} elements The html representing the step, or actions, or a function returning the html to display or an action
+ * @param {Array<string | function(NLSStory) | NLSAction>} elements The html representing the step, or actions, or a function returning the html to display or an action
  * @param {function(NLSStory)} onDisplay Function to execute when step is displayed
  */
 function NLSStep(name, elements, onDisplay) {
