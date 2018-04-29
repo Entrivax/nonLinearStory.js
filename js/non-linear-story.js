@@ -1,9 +1,9 @@
 ;(function($) {
 
-    function NonLinearStory(element, history, initialStep) {
+    function NonLinearStory(element, story, initialStep) {
         var _self = this;
         _self.element = $(element);
-        _self.history = history;
+        _self.history = story;
 
         _self.displayStep = function(step) {
             _self.element.fadeOut(200, function() {
@@ -26,7 +26,7 @@
                                     if (typeof step.elements[i].goToStep === 'string') {
                                         stepToGo = step.elements[i].goToStep;
                                     } else if (typeof step.elements[i].goToStep === 'function') {
-                                        stepToGo = step.elements[i].goToStep(history);
+                                        stepToGo = step.elements[i].goToStep(story);
                                     }
 
                                     var stepObject = _self.getStep(stepToGo);
@@ -49,9 +49,9 @@
         };
 
         _self.getStep = function(stepName) {
-            for (var j = 0; j < history.steps.length; j++) {
-                if (history.steps[j].name === stepName) {
-                    return history.steps[j];
+            for (var j = 0; j < story.steps.length; j++) {
+                if (story.steps[j].name === stepName) {
+                    return story.steps[j];
                 }
             }
         };
@@ -67,11 +67,18 @@
         }
     };
 
-    $.fn.nonLinearStory = function(history, initialStep) {
+    $.fn.nonLinearStory = plugin_nonLinearStory;
+
+    /**
+     * 
+     * @param {NLSStory} story The story
+     * @param {NLSStep|string} initialStep The initial step object or the name of the initial step
+     */
+    function plugin_nonLinearStory(story, initialStep) {
         return this.each(function() {
             if (!$.data(this, 'plugin_nonLinearStory')) {
                 $.data(this, 'plugin_nonLinearStory', 
-                new NonLinearStory(this, history, initialStep));
+                new NonLinearStory(this, story, initialStep));
             }
         });
     }
