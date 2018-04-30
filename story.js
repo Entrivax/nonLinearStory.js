@@ -21,10 +21,27 @@
                 new NLSAction('Terminer le jeu.', 'startStep', function(story) {
                     story['jeuTerminé'] += 1;
                 }),
+                new NLSAction(function (story) {
+                    if (story['passéParLà'] == 0)
+                        return 'Mais je suis déjà passé par là !';
+                    else
+                        return 'Ça va faire ' + (story['passéParLà'] + 1) + ' fois que je vais cliquer ici !';
+                }, 'step4', function(story) {
+                    story['passéParLà'] += 1;
+                }, function(story) {
+                    return story['jeuTerminé'] > 0;
+                }),
+            ]),
+            new NLSStep('step4', [
+                'Oui.',
+                new NLSAction('Terminer le jeu.', 'startStep', function(story) {
+                    story['jeuTerminé'] += 1;
+                }),
             ]),
         ]);
         story['jeuTerminé'] = 0;
         story['jeuCommencé'] = 0;
+        story['passéParLà'] = 0;
         $('nls').nonLinearStory(story, 'startStep');
     });
 })(jQuery);
