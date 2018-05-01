@@ -9,9 +9,12 @@
         var _self = this;
         _self.element = $(element);
         _self.story = story;
+        var canUseAction = true;
 
         _self.displayStep = function(step) {
+            canUseAction = false;
             _self.element.fadeOut(200, function() {
+                canUseAction = true;
                 if (typeof step.onDisplay === 'function')
                     step.onDisplay(_self.story);
                 var elem = _self.element.empty();
@@ -28,6 +31,10 @@
 
                                 $('<div class="action">' + displayedName + '</div>')
                                     .bind('click', function() {
+                                        if (!canUseAction) {
+                                            return;
+                                        }
+
                                         if (typeof step.elements[i].onClick === 'function')
                                             step.elements[i].onClick(_self.story);
     
