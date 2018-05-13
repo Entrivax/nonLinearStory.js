@@ -2,9 +2,9 @@
     $(document).ready(function() {
         var story = new NLSStory([
             new NLSStep('startStep', [
-                function (story) { return 'Bienvenue dans ce jeu ! Vous l\'avez terminé ' + story['jeuTerminé'] + ' fois et commencé ' + story['jeuCommencé'] + ' fois.' },
-                new NLSAction('Cliquez ici pour commencer le jeu.', 'step1', function(story) {
-                    story['jeuCommencé'] += 1;
+                function (nls) { return 'Bienvenue dans ce jeu ! Vous l\'avez terminé ' + nls.get('jeuTerminé') + ' fois et commencé ' + nls.get('jeuCommencé') + ' fois.' },
+                new NLSAction('Cliquez ici pour commencer le jeu.', 'step1', function(nls) {
+                    nls.set('jeuCommencé', nls.get('jeuCommencé') + 1);
                 }),
             ]),
             new NLSStep('step1', [
@@ -18,30 +18,27 @@
             ]),
             new NLSStep('step3', [
                 'Mmmh, ça va.',
-                new NLSAction('Terminer le jeu.', 'startStep', function(story) {
-                    story['jeuTerminé'] += 1;
+                new NLSAction('Terminer le jeu.', 'startStep', function(nls) {
+                    nls.set('jeuTerminé', nls.get('jeuTerminé') + 1);
                 }),
-                new NLSAction(function (story) {
-                    if (story['passéParLà'] == 0)
+                new NLSAction(function (nls) {
+                    if (nls.get('passéParLà') == 0)
                         return 'Mais je suis déjà passé par là !';
                     else
-                        return 'Ça va faire ' + (story['passéParLà'] + 1) + ' fois que je vais cliquer ici !';
-                }, 'step4', function(story) {
-                    story['passéParLà'] += 1;
-                }, function(story) {
-                    return story['jeuTerminé'] > 0;
+                        return 'Ça va faire ' + (nls.get('passéParLà') + 1) + ' fois que je vais cliquer ici !';
+                }, 'step4', function(nls) {
+                    nls.set('passéParLà', nls.get('passéParLà') + 1);
+                }, function(nls) {
+                    return nls.get('jeuTerminé') > 0;
                 }),
             ]),
             new NLSStep('step4', [
                 'Oui.',
-                new NLSAction('Terminer le jeu.', 'startStep', function(story) {
-                    story['jeuTerminé'] += 1;
+                new NLSAction('Terminer le jeu.', 'startStep', function(nls) {
+                    nls.set('jeuTerminé', nls.get('jeuTerminé') + 1);
                 }),
             ]),
         ]);
-        story['jeuTerminé'] = 0;
-        story['jeuCommencé'] = 0;
-        story['passéParLà'] = 0;
         var nls = new NonLinearStory(story, {
             baseSelector: 'nls',
             initialStep: 'startStep',
@@ -50,5 +47,11 @@
             inAnimationClass: 'fade-in',
             inAnimationDuration: 200,
         });
+
+        nls.set('jeuTerminé', 0);
+        nls.set('jeuCommencé', 0);
+        nls.set('passéParLà', 0);
+
+        nls.start();
     });
 })(jQuery);

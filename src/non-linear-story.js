@@ -44,8 +44,60 @@
 
         var canUseAction = true;
         var shownElements = [];
+        var currentStep = undefined;
+        var variables = {};
 
+        /**
+         * Describe a step change event
+         * @constructor NLSStepChangeEvent
+         * @param {string} previousStep The previous step
+         * @param {string} currentStep The current step
+         * @param {NonLinearStory} nlsInstance The current instance of NonLinearStory
+         */
+        function NLSStepChangeEvent(previousStep, currentStep, nlsInstance) {
+            this.previousStep = previousStep;
+            this.currentStep = currentStep;
+            this.nlsInstance = nlsInstance;
 
+            return this;
+        }
+
+        /**
+         * @returns {string} The name of the current step
+         */
+        _self.getCurrentStepName = function() {
+            return currentStep.name;
+        };
+
+        /**
+         * @returns {Array<string>} The list of defined variables
+         */
+        _self.getVariables = function() {
+            return Object.keys(variables);
+        };
+
+        /**
+         * Get the value from the variable name
+         * @param {string} variable The name of the variable to get
+         * @returns {*} The value of the variable
+         */
+        _self.get = function(variable) {
+            return variables[variable];
+        };
+
+        /**
+         * Set the value from the variable name
+         * @param {string} variable The name of the variable to set
+         * @param {*} value The value to set to the variable
+         */
+        _self.set = function(variable, value) {
+            variables[variable] = value;
+        };
+
+        /**
+         * Change the displayed step
+         * @param {NLSStep} step The step to display
+         */
         _self.displayStep = function(step) {
             canUseAction = false;
             var i;
@@ -53,8 +105,10 @@
 
             for(i = 0; i < shownElements.length; i++) {
                 var elem = shownElements[i];
+
                 if (elem.displayOptions.outAnimationClass)
                     elem.element.addClass(elem.displayOptions.outAnimationClass);
+
                 ;(function(elem) {
                     var deferred = timer(elem.displayOptions.outAnimationDuration);
                     deferred.done(function() {
@@ -65,16 +119,21 @@
             }
 
             function onDone() {
+                var lastStep = currentStep;
+                currentStep = step;
+
                 shownElements = [];
                 canUseAction = true;
+                
                 if (typeof step.onDisplay === 'function')
-                    step.onDisplay(_self.story);
+                    step.onDisplay(new NLSStepChangeEvent(lastStep.name, currentStep.name, _self));
+
                 var i;
                 for (i = 0; i < step.elements.length; i++) {
                     (function(i) {
                         var e = step.elements[i];
                         if (typeof e === 'function')
-                            e = e(_self.story);
+                            e = e(_self);
 
                         var displayOptions = {
                             outAnimationClass: _self.options.outAnimationClass,
@@ -105,10 +164,10 @@
                             });
 
                         } else if (typeof e === 'object' && (e instanceof NLSAction || e instanceof NLSText)) {
-                            if (!e.isVisible || (typeof e.isVisible === 'function' && e.isVisible(_self.story))) {
+                            if (!e.isVisible || (typeof e.isVisible === 'function' && e.isVisible(_self))) {
                                 var htmlText = e.html;
                                 if (typeof htmlText === 'function')
-                                    htmlText = htmlText(_self.story);
+                                    htmlText = htmlText(_self);
 
                                 var elemToAdd = $('<p></p>');
                                 elemToAdd.html(htmlText);
@@ -121,14 +180,14 @@
                                         }
                                     
                                         if (typeof step.elements[i].onClick === 'function')
-                                            step.elements[i].onClick(_self.story);
+                                            step.elements[i].onClick(_self);
     
                                         var stepToGo = '';
     
                                         if (typeof step.elements[i].goToStep === 'string') {
                                             stepToGo = step.elements[i].goToStep;
                                         } else if (typeof step.elements[i].goToStep === 'function') {
-                                            stepToGo = step.elements[i].goToStep(story);
+                                            stepToGo = step.elements[i].goToStep(_self);
                                         }
     
                                         var stepObject = _self.getStep(stepToGo);
@@ -186,6 +245,11 @@
             $.when.apply(null, deferreds).done(onDone);
         };
 
+        /**
+         * Get the step instance from its step name
+         * @param {string} stepName The step name
+         * @returns {NLSStep} The instance of the step
+         */
         _self.getStep = function(stepName) {
             for (var j = 0; j < story.steps.length; j++) {
                 if (story.steps[j].name === stepName) {
@@ -194,15 +258,16 @@
             }
         };
 
-        _self.init(_self.options.initialStep);
-    };
-
-    NonLinearStory.prototype.init = function(initialStep) {
-        if (typeof initialStep === 'string') {
-            this.displayStep(this.getStep(initialStep));
-        } else {
-            this.displayStep(initialStep);
-        }
+        /**
+         * Start the story
+         */
+        _self.start = function() {
+            if (typeof initialStep === 'string') {
+                this.displayStep(this.getStep(_self.options.initialStep));
+            } else {
+                this.displayStep(_self.options.initialStep);
+            }
+        };
     };
 
     window.NonLinearStory = NonLinearStory;
@@ -211,21 +276,21 @@
 /**
  * Function returning the html to display
  * @callback HtmlToDisplayCallback
- * @param {NLSStory} story The story
+ * @param {NonLinearStory} nls The NonLinearStory instance
  * @return {string} The html discribing the element
  */
 
 /**
  * Function returning the name of the step to go as string
  * @callback StepNameCallback
- * @param {NLSStory} story The story
+ * @param {NonLinearStory} nls The NonLinearStory instance
  * @returns {string} The name of the step
  */
 
 /**
  * Function returning if the element is visible or not
  * @callback IsVisibleCallback
- * @param {NLSStory} story The story
+ * @param {NonLinearStory} nls The NonLinearStory instance
  * @returns {boolean} Is element visible
  */
 
@@ -248,6 +313,8 @@ function NLSText(html, isVisible, selector, outAnimationClass, outAnimationDurat
     this.outAnimationDuration = outAnimationDuration;
     this.inAnimationClass = inAnimationClass;
     this.inAnimationDuration = inAnimationDuration;
+
+    return this;
 }
 
 /**
