@@ -3,7 +3,7 @@
         <meta charset="UTF-8">
         <title>NonLinearStory.js exemple</title>
         <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-        <script src="../non-linear-story.js"></script>
+        <script src="../../non-linear-story.js"></script>
         <script src="./story.js"></script>
         <style>
             nls {
@@ -71,10 +71,52 @@
                     opacity: 0;
                 }
             }
+
+            #container {
+                margin: auto;
+                width: 800px;
+                height: 400px;
+                position: relative;
+                background-color: #00000030;
+            }
+            
+            #text1 {
+                position: absolute;
+                top:0px;
+                left:0px;
+                width: 250px;
+                background-color: #00000030;
+            }
+
+            #choices {
+                position: absolute;
+                bottom: 0px;
+                right: 0px;
+                min-height: 105px;
+                width: 300px;
+                background-color: #00000030;
+            }
+
+            #choices p {
+                background-color: #00006030;
+                transition: all 0.2s;
+                cursor: pointer;
+                padding: 5px;
+            }
+
+            #choices p:hover {
+                background-color: #00006060;
+            }
         </style>
     </head>
 
     <body>
-        <nls></nls>
+        <div id="container">
+            <div id="text1">
+            </div>
+
+            <div id="choices">
+            </div>
+        </div>
     </body>
 </html>
