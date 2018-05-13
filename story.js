@@ -42,6 +42,13 @@
         story['jeuTerminé'] = 0;
         story['jeuCommencé'] = 0;
         story['passéParLà'] = 0;
-        $('nls').nonLinearStory(story, 'startStep');
+        var nls = new NonLinearStory(story, {
+            baseSelector: 'nls',
+            initialStep: 'startStep',
+            outAnimationClass: 'fade-out',
+            outAnimationDuration: 200,
+            inAnimationClass: 'fade-in',
+            inAnimationDuration: 200,
+        });
     });
 })(jQuery);

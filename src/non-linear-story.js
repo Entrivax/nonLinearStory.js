@@ -1,40 +1,125 @@
-;(function($) {
+;(function($, window) {
     'use strict';
 
     if (!$) {
         return console.warn('jQuery not detected!');
     }
 
-    function NonLinearStory(element, story, initialStep) {
+    function timer(delay) {
+        var deferred = $.Deferred();
+        setTimeout(function() {
+            deferred.resolve();
+        }, delay);
+        return deferred;
+    }
+
+    /**
+     * Options of NonLinearStory
+     * @typedef {Object} NonLinearStoryOptions
+     * @property {string} baseSelector Selector used to place steps texts if not defined
+     * @property {string} initialStep Initial step of the story
+     * @property {string} outAnimationClass Animation class used to hide elements
+     * @property {number} outAnimationDuration Animation duration used to hide elements
+     * @property {string} inAnimationClass Animation class used to show elements
+     * @property {number} inAnimationDuration Animation duration used to show elements
+     */
+
+    /**
+     * Constructor of a NonLinearStory
+     * @constructor NonLinearStory
+     * @param {NLSStory} story The story
+     * @param {NonLinearStoryOptions} options Options of NonLinearStory
+     */
+    function NonLinearStory(story, options) {
         var _self = this;
-        _self.element = $(element);
         _self.story = story;
+        _self.options = $.extend({
+            baseSelector: 'body', // Selector used to place steps texts if not defined
+            initialStep: 'start', // Initial step of the story
+            outAnimationClass: null, // Animation class used to hide elements
+            outAnimationDuration: 0, // Animation duration used to hide elements
+            inAnimationClass: null, // Animation class used to show elements
+            inAnimationDuration: 0, // Animation duration used to show elements
+        }, options);
+
         var canUseAction = true;
+        var shownElements = [];
+
 
         _self.displayStep = function(step) {
             canUseAction = false;
-            _self.element.fadeOut(200, function() {
+            var i;
+            var deferreds = [];
+
+            for(i = 0; i < shownElements.length; i++) {
+                var elem = shownElements[i];
+                if (elem.displayOptions.outAnimationClass)
+                    elem.element.addClass(elem.displayOptions.outAnimationClass);
+                ;(function(elem) {
+                    var deferred = timer(elem.displayOptions.outAnimationDuration);
+                    deferred.done(function() {
+                        elem.element.remove();
+                    });
+                    deferreds.push(deferred);
+                })(elem);
+            }
+
+            function onDone() {
+                shownElements = [];
                 canUseAction = true;
                 if (typeof step.onDisplay === 'function')
                     step.onDisplay(_self.story);
-                var elem = _self.element.empty();
-                for (var i = 0; i < step.elements.length; i++) {
-                    (function (i) {
+                var i;
+                for (i = 0; i < step.elements.length; i++) {
+                    (function(i) {
                         var e = step.elements[i];
                         if (typeof e === 'function')
                             e = e(_self.story);
-                        if (typeof e === 'object' && e instanceof NLSAction) {
-                            if (!e.isVisible || (typeof e.isVisible === 'function' && e.isVisible(_self.story))) {
-                                var displayedName = step.elements[i].displayedName;
-                                if (typeof displayedName === 'function')
-                                    displayedName = displayedName(_self.story);
 
-                                $('<div class="action">' + displayedName + '</div>')
-                                    .bind('click', function() {
+                        var displayOptions = {
+                            outAnimationClass: _self.options.outAnimationClass,
+                            outAnimationDuration: _self.options.outAnimationDuration,
+                            inAnimationClass: _self.options.inAnimationClass,
+                            inAnimationDuration: _self.options.inAnimationDuration,
+                        }
+
+                        if (typeof e === 'string') {
+                            var elemToAdd = $('<p></p>');
+                            elemToAdd.html(e);
+
+                            ;(function(elemToAdd) {
+                                timer(0).done(function() {
+                                    elemToAdd.appendTo(_self.options.baseSelector);
+                                });
+                                if (displayOptions.inAnimationClass != null) {
+                                    elemToAdd.addClass(displayOptions.inAnimationClass);
+                                    timer(displayOptions.inAnimationDuration).done(function() {
+                                        elemToAdd.removeClass(displayOptions.inAnimationClass);
+                                    });
+                                }
+                            })(elemToAdd);
+
+                            shownElements.push({
+                                displayOptions: displayOptions,
+                                element: elemToAdd,
+                            });
+
+                        } else if (typeof e === 'object' && (e instanceof NLSAction || e instanceof NLSText)) {
+                            if (!e.isVisible || (typeof e.isVisible === 'function' && e.isVisible(_self.story))) {
+                                var htmlText = e.html;
+                                if (typeof htmlText === 'function')
+                                    htmlText = htmlText(_self.story);
+
+                                var elemToAdd = $('<p></p>');
+                                elemToAdd.html(htmlText);
+
+                                if (e instanceof NLSAction) {
+                                    elemToAdd.addClass('action');
+                                    elemToAdd.bind('click', function() {
                                         if (!canUseAction) {
                                             return;
                                         }
-
+                                    
                                         if (typeof step.elements[i].onClick === 'function')
                                             step.elements[i].onClick(_self.story);
     
@@ -53,17 +138,52 @@
                                         } else {
                                             console.error('Step ' + stepToGo + ' not found!');
                                         }
-                                    }).appendTo(elem);
+                                    });
+                                }
+
+                                displayOptions = {
+                                    outAnimationClass: e.outAnimationClass === undefined ? _self.options.outAnimationClass : e.outAnimationClass,
+                                    outAnimationDuration: e.outAnimationDuration === undefined ? _self.options.outAnimationDuration : e.outAnimationDuration,
+                                    inAnimationClass: e.inAnimationClass === undefined ? _self.options.inAnimationClass : e.inAnimationClass,
+                                    inAnimationDuration: e.inAnimationDuration === undefined ? _self.options.inAnimationDuration : e.inAnimationDuration,
+                                };
+                                
+                                var targetSelector = e.selector !== undefined ? e.selector : _self.options.baseSelector;
+                                
+                                if (targetSelector == null) {
+                                    console.warn('WARNING: no selector defined for element');
+                                    return;
+                                }
+
+                                var selectedElement = $(targetSelector).eq(0);
+                                if (selectedElement.length === 0) {
+                                    console.warn('WARNING: element from selector "' + targetSelector + '" not found');
+                                    return;
+                                }
+
+                                ;(function(elemToAdd, selectedElement) {
+                                    timer(0).done(function() {
+                                        elemToAdd.appendTo(selectedElement);
+                                    });
+                                    if (displayOptions.inAnimationClass != null) {
+                                        elemToAdd.addClass(displayOptions.inAnimationClass);
+                                        timer(displayOptions.inAnimationDuration).done(function() {
+                                            elemToAdd.removeClass(displayOptions.inAnimationClass);
+                                        });
+                                    }
+                                })(elemToAdd, selectedElement);
+
+                                shownElements.push({
+                                    displayOptions: displayOptions,
+                                    element: elemToAdd,
+                                });
                             }
-                        } else {
-                            var elemToAppend = $('<div class="element"></div>');
-                            elemToAppend.html(e);
-                            elemToAppend.appendTo(elem);
                         }
                     })(i);
                 }
-                _self.element.fadeIn(200);
-            })
+            }
+
+            $.when.apply(null, deferreds).done(onDone);
         };
 
         _self.getStep = function(stepName) {
@@ -74,8 +194,8 @@
             }
         };
 
-        _self.init(initialStep);
-    }
+        _self.init(_self.options.initialStep);
+    };
 
     NonLinearStory.prototype.init = function(initialStep) {
         if (typeof initialStep === 'string') {
@@ -85,22 +205,8 @@
         }
     };
 
-    $.fn.nonLinearStory = plugin_nonLinearStory;
-
-    /**
-     * 
-     * @param {NLSStory} story The story
-     * @param {NLSStep|string} initialStep The initial step object or the name of the initial step
-     */
-    function plugin_nonLinearStory(story, initialStep) {
-        return this.each(function() {
-            if (!$.data(this, 'plugin_nonLinearStory')) {
-                $.data(this, 'plugin_nonLinearStory', 
-                new NonLinearStory(this, story, initialStep));
-            }
-        });
-    }
-})(window.jQuery);
+    window.NonLinearStory = NonLinearStory;
+})(window.jQuery, window);
 
 /**
  * Function returning the html to display
@@ -124,18 +230,49 @@
  */
 
 /**
- * Describe an action of an NLHStep
+ * Describe a text to display in a NLSStep
+ * @constructor NLSText
+ * @param {string|HtmlToDisplayCallback} html Html to display
+ * @param {IsVisibleCallback} [isVisible] Function executed at NLSStep display to know if text is visible
+ * @param {string} [selector] Selector used to display element
+ * @param {string} [outAnimationClass] Class to use to hide this element
+ * @param {string} [outAnimationDuration] Duration of the hiding class
+ * @param {string} [inAnimationClass] Class to use to show this element
+ * @param {string} [inAnimationDuration] Duration of the showing class
+ */
+function NLSText(html, isVisible, selector, outAnimationClass, outAnimationDuration, inAnimationClass, inAnimationDuration) {
+    this.html = html;
+    this.isVisible = isVisible;
+    this.selector = selector;
+    this.outAnimationClass = outAnimationClass;
+    this.outAnimationDuration = outAnimationDuration;
+    this.inAnimationClass = inAnimationClass;
+    this.inAnimationDuration = inAnimationDuration;
+}
+
+/**
+ * Describe an action of a NLSStep
  * @constructor NLSAction
  * @param {string|HtmlToDisplayCallback} displayedName Name put in link
  * @param {string|StepNameCallback} goToStep Name of the step to go, or a function returning the name of the step to go as string
- * @param {function(NLSStory)} onClick Function executed when option is clicked
- * @param {IsVisibleCallback} isVisible Function executed at NLSStep display to know if action is visible
+ * @param {function(NLSStory)} [onClick] Function executed when option is clicked
+ * @param {IsVisibleCallback} [isVisible] Function executed at NLSStep display to know if action is visible
+ * @param {string} [selector] Selector used to display element
+ * @param {string} [outAnimationClass] Class to use to hide this element
+ * @param {string} [outAnimationDuration] Duration of the hiding class
+ * @param {string} [inAnimationClass] Class to use to show this element
+ * @param {string} [inAnimationDuration] Duration of the showing class
  */
-function NLSAction(displayedName, goToStep, onClick, isVisible) {
-    this.displayedName = displayedName;
+function NLSAction(displayedName, goToStep, onClick, isVisible, selector, outAnimationClass, outAnimationDuration, inAnimationClass, inAnimationDuration) {
+    this.html = displayedName;
     this.goToStep = goToStep;
     this.isVisible = isVisible;
     this.onClick = onClick;
+    this.selector = selector;
+    this.outAnimationClass = outAnimationClass;
+    this.outAnimationDuration = outAnimationDuration;
+    this.inAnimationClass = inAnimationClass;
+    this.inAnimationDuration = inAnimationDuration;
 
     return this;
 }
@@ -145,7 +282,7 @@ function NLSAction(displayedName, goToStep, onClick, isVisible) {
  * @constructor NLSStep
  * @param {string} name The name of the step
  * @param {Array<string | HtmlToDisplayCallback | NLSAction>} elements The html representing the step, or actions, or a function returning the html to display or an action
- * @param {function(NLSStory)} onDisplay Function to execute when step is displayed
+ * @param {function(NLSStory)} [onDisplay] Function to execute when step is displayed
  */
 function NLSStep(name, elements, onDisplay) {
     this.name = name;
