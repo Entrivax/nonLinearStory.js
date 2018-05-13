@@ -320,9 +320,9 @@ function NLSText(html, isVisible, selector, outAnimationClass, outAnimationDurat
 /**
  * Describe an action of a NLSStep
  * @constructor NLSAction
- * @param {string|HtmlToDisplayCallback} displayedName Name put in link
+ * @param {string|HtmlToDisplayCallback} html Html of the action
  * @param {string|StepNameCallback} goToStep Name of the step to go, or a function returning the name of the step to go as string
- * @param {function(NLSStory)} [onClick] Function executed when option is clicked
+ * @param {function(NonLinearStory)} [onClick] Function executed when option is clicked
  * @param {IsVisibleCallback} [isVisible] Function executed at NLSStep display to know if action is visible
  * @param {string} [selector] Selector used to display element
  * @param {string} [outAnimationClass] Class to use to hide this element
@@ -330,8 +330,8 @@ function NLSText(html, isVisible, selector, outAnimationClass, outAnimationDurat
  * @param {string} [inAnimationClass] Class to use to show this element
  * @param {string} [inAnimationDuration] Duration of the showing class
  */
-function NLSAction(displayedName, goToStep, onClick, isVisible, selector, outAnimationClass, outAnimationDuration, inAnimationClass, inAnimationDuration) {
-    this.html = displayedName;
+function NLSAction(html, goToStep, onClick, isVisible, selector, outAnimationClass, outAnimationDuration, inAnimationClass, inAnimationDuration) {
+    this.html = html;
     this.goToStep = goToStep;
     this.isVisible = isVisible;
     this.onClick = onClick;
@@ -348,8 +348,8 @@ function NLSAction(displayedName, goToStep, onClick, isVisible, selector, outAni
  * Describe a step of an NLSStory
  * @constructor NLSStep
  * @param {string} name The name of the step
- * @param {Array<string | HtmlToDisplayCallback | NLSAction>} elements The html representing the step, or actions, or a function returning the html to display or an action
- * @param {function(NLSStory)} [onDisplay] Function to execute when step is displayed
+ * @param {Array<string | HtmlToDisplayCallback | NLSText | NLSAction>} elements The html representing the step, or actions, or a function returning the html to display or an action
+ * @param {function(NLSStepChangeEvent)} [onDisplay] Function to execute when step is displayed
  */
 function NLSStep(name, elements, onDisplay) {
     this.name = name;
