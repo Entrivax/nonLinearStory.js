@@ -262,7 +262,7 @@
          * Start the story
          */
         _self.start = function() {
-            if (typeof initialStep === 'string') {
+            if (typeof _self.options.initialStep === 'string') {
                 this.displayStep(this.getStep(_self.options.initialStep));
             } else {
                 this.displayStep(_self.options.initialStep);
