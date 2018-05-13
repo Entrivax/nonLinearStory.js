@@ -12,7 +12,7 @@ nonLinearStory.js is a Javascript library to write interactive stories.
 <!-- Be sure to have jQuery included -->
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <!-- Include the library -->
-<script src="./src/non-linear-story.js"></script>
+<script src="./non-linear-story.js"></script>
 ```
 
 ## How to use
