@@ -126,7 +126,7 @@
                 canUseAction = true;
                 
                 if (typeof step.onDisplay === 'function')
-                    step.onDisplay(new NLSStepChangeEvent(lastStep.name, currentStep.name, _self));
+                    step.onDisplay(new NLSStepChangeEvent(lastStep ? lastStep.name : undefined, currentStep ? currentStep.name : undefined, _self));
 
                 var i;
                 for (i = 0; i < step.elements.length; i++) {
