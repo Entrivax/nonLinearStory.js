@@ -124,9 +124,6 @@
 
                 shownElements = [];
                 canUseAction = true;
-                
-                if (typeof step.onDisplay === 'function')
-                    step.onDisplay(new NLSStepChangeEvent(lastStep ? lastStep.name : undefined, currentStep ? currentStep.name : undefined, _self));
 
                 var i;
                 for (i = 0; i < step.elements.length; i++) {
@@ -240,6 +237,9 @@
                         }
                     })(i);
                 }
+                
+                if (typeof step.onDisplay === 'function')
+                    step.onDisplay(new NLSStepChangeEvent(lastStep ? lastStep.name : undefined, currentStep ? currentStep.name : undefined, _self));
             }
 
             $.when.apply(null, deferreds).done(onDone);
