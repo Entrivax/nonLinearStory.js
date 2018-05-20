@@ -54,32 +54,22 @@
                 y: Math.floor((event.pageY - offsetY) / (gridSize * zoom)),
             }
 
-            // Clear animation queue
-            var contextMenu = $('.grid-context-menu')
-            contextMenu.finish()
-
-            // Empty currently created elements
-            contextMenu.empty()
-
-            // Menu elements creation
-            var menuElement1 = $('<li>New step</li>')
-            menuElement1.click(function() {
-                contextMenu.hide(100)
-                newStep(gridPosition.x, gridPosition.y)
-            })
-            menuElement1.appendTo(contextMenu)
-
-            // Show menu
-            contextMenu.toggle(200).css({
-                left: event.pageX + 'px',
-                top: event.pageY + 'px',
-            })
+            showContextMenu('grid-context-menu', event.pageX, event.pageY, [ {
+                text: 'New step',
+                onClick: function() {
+                    newStep(gridPosition.x, gridPosition.y)
+                }
+            }])
         })
 
         $(document).bind('mousedown', function(event) {
             // Hide context menu if clicked elsewhere
             if ($(event.target).parents('.grid-context-menu').length === 0) {
                 $('.grid-context-menu').hide(100)
+            }
+
+            if ($(event.target).parents('.lateral-menu-context-menu').length === 0) {
+                $('.lateral-menu-context-menu').hide(100)
             }
         })
 
@@ -89,6 +79,33 @@
 
         redraw()
     })
+
+    function showContextMenu(menuClass, x, y, elements) {
+        // Clear animation queue
+        var contextMenu = $('.' + menuClass)
+        contextMenu.finish()
+
+        // Empty currently created elements
+        contextMenu.empty()
+
+        // Menu elements creation
+        for (var i = 0; i < elements.length; i++) {
+            var menuElement = $('<li>' + elements[i].text + '</li>')
+            ;(function(element) {
+                menuElement.click(function() {
+                    contextMenu.hide(100)
+                    element.onClick()
+                })
+            })(elements[i])
+            menuElement.appendTo(contextMenu)
+        }
+
+        // Show menu
+        contextMenu.toggle(200).css({
+            left: x + 'px',
+            top: y + 'px',
+        })
+    }
 
     function onDragMove(event) {
         if (movingElement === undefined) {
@@ -125,7 +142,6 @@
             'newStep',
             x,
             y,
-            [steps[0]]
         )
 
         steps.push(step)
@@ -160,7 +176,7 @@
             return
         }
         
-        function createInput(labelText, inputPlaceholder) {
+        function createTextInput(labelText, inputPlaceholder, initialValue) {
             var container = $('<div class="input-field"></div>')
             var label = $('<label></label>')
             label.text(labelText)
@@ -168,10 +184,12 @@
             var input = $('<input type="text">')
             input.attr('placeholder', inputPlaceholder)
             input.appendTo(container)
+            input.change(updateStepInfos)
+            input.val(initialValue)
             return container
         }
 
-        function createSortable(labelText, addButton) {
+        function createParagraphsContainer(labelText) {
             var container = $('<div class="input-field sortable"></div>')
             var label = $('<label></label>')
             label.text(labelText)
@@ -181,26 +199,131 @@
                 placeholder: 'sortable-placeholder',
             })
             sortable.appendTo(container)
-            if (addButton === true) {
-                var button = $('<button><i class="fas fa-plus"></i></button>')
-                button.appendTo(container)
-            }
+            var button = $('<button class="add-button"><i class="fas fa-plus"></i></button>')
+            button.appendTo(container)
             return container
         }
 
-        var nameInput = createInput('Step name:', 'The name of the step')
-        nameInput.find('input').change(updateStepInfos).val(selectedStep.name)
+        var nameInput = createTextInput('Step name:', 'The name of the step', selectedStep.name)
 
-        var paragraphs = createSortable('Paragraphs:', true)
+        var paragraphs = createParagraphsContainer('Paragraphs:')
         paragraphs.find('ul').on('change', updateStepInfos)
         paragraphs.find('button').click(function() {
-            $('<li><i class="fas fa-sort"></i> <span>Text:</span><textarea></textarea></li>').appendTo(paragraphs.find('ul'))
-            updateStepInfos()
+            showContextMenu('lateral-menu-context-menu', event.pageX, event.pageY, [
+                {
+                    text: 'New text element',
+                    onClick: function() {
+                        var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span><textarea></textarea></li>')
+                        container.find('.remove-button').click(function() {
+                            container.remove()
+                            updateStepInfos()
+                        })
+                        container.appendTo(paragraphs.find('ul'))
+                        updateStepInfos()
+                    }
+                },
+                {
+                    text: 'New path',
+                    onClick: function() {
+                        var container = $('<li class="path-element"><i class="fas fa-sort"></i> <span>Path:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
+                        container.find('.remove-button').click(function() {
+                            container.remove()
+                            updateStepInfos()
+                        })
+                        var select = $('<select></select>')
+                        for (var i = 0; i < steps.length; i++) {
+                            var option = $('<option></option>')
+                            option.text(steps[i].name)
+                            option.val(steps[i].name)
+                            option.appendTo(select)
+                        }
+                        select.change(updateStepInfos)
+                        
+                        var textArea = $('<textarea></textarea>')
+                        textArea.change(updateStepInfos)
+                        
+                        var pathParamsContainer = container.find('.path-params')
+                        $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
+                        select.appendTo(pathParamsContainer)
+                        $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
+                        textArea.appendTo(pathParamsContainer)
+                        container.appendTo(paragraphs.find('ul'))
+                        select.customSelect()
+                        updateStepInfos()
+                    }
+                }
+            ])
         })
+
+        for (var i = 0; i < selectedStep.paragraphs.length; i++) {
+            var paragraph = selectedStep.paragraphs[i]
+            if (paragraph.type === 'text') {
+                var textarea = $('<textarea></textarea>')
+                textarea.change(updateStepInfos)
+                textarea.val(paragraph.text)
+                var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span></li>')
+                container.find('.remove-button').click(function() {
+                    container.remove()
+                    updateStepInfos()
+                })
+                textarea.appendTo(container)
+                container.appendTo(paragraphs.find('ul'))
+            } else if (paragraph.type === 'path') {
+                var container = $('<li class="path-element"><i class="fas fa-sort"></i> <span>Path:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
+                container.find('.remove-button').click(function() {
+                    container.remove()
+                    updateStepInfos()
+                })
+
+                var select = $('<select></select>')
+
+                for (var j = 0; j < steps.length; j++) {
+                    var option = $('<option></option>')
+                    option.text(steps[j].name)
+                    option.val(steps[j].name)
+                    option.appendTo(select)
+                }
+
+                select.val(paragraph.toStep || steps[0].name)
+                select.change(updateStepInfos)
+                        
+                var textArea = $('<textarea></textarea>')
+                textArea.val(paragraph.text)
+                textArea.change(updateStepInfos)
+                
+                var pathParamsContainer = container.find('.path-params')
+                $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
+                select.appendTo(pathParamsContainer)
+                $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
+                textArea.appendTo(pathParamsContainer)
+                container.appendTo(paragraphs.find('ul'))
+                select.customSelect()
+            }
+        }
         
         function updateStepInfos() {
             selectedStep.name = nameInput.find('input').val()
             nameInput.find('input').val(selectedStep.name)
+
+            var elements = paragraphs.find('li.text-element, li.path-element')
+            selectedStep.paragraphs.length = 0
+            for (var i = 0; i < elements.length; i++) {
+                var $element = $(elements[i])
+                if ($element.hasClass('text-element')) {
+                    selectedStep.paragraphs.push({
+                        type: 'text',
+                        text: $element.find('textarea').val()
+                    })
+                } else if ($element.hasClass('path-element')) {
+                    var targetStepName = $element.find('select').val()
+                    selectedStep.paragraphs.push({
+                        type: 'path',
+                        toStep: targetStepName,
+                        text: $element.find('textarea').val()
+                    })
+                }
+            }
+
             redraw()
         }
 
@@ -242,24 +365,38 @@
         for (var i = 0; i < steps.length; i++) {
             var step = steps[i]
             var stepRect = null
-            for (var j = 0; j < step.links.length; j++) {
+            for (var j = 0; j < step.paragraphs.length; j++) {
+                if (step.paragraphs[j].type !== 'path') {
+                    continue
+                }
                 if (stepRect == null) {
                     stepRect = getStepRectangle(step, 4)
                     stepRect.c = { x: (stepRect.x1 + stepRect.x2) * 0.5, y: (stepRect.y1 + stepRect.y2) * 0.5 }
                 }
 
-                var toStepRect = getStepRectangle(step.links[j], 4)
-                toStepRect.c = { x: (toStepRect.x1 + toStepRect.x2) * 0.5, y: (toStepRect.y1 + toStepRect.y2) * 0.5 }
-                
-                var p1 = segRectInter(stepRect.c, toStepRect.c, stepRect)
-                var p2 = segRectInter(stepRect.c, toStepRect.c, toStepRect)
+                var targetStep = findStep(step.paragraphs[j].toStep)
 
-                if (!p1 || !p2) {
-                    continue
+                if (targetStep) {
+                    var toStepRect = getStepRectangle(targetStep, 4)
+                    toStepRect.c = { x: (toStepRect.x1 + toStepRect.x2) * 0.5, y: (toStepRect.y1 + toStepRect.y2) * 0.5 }
+                    
+                    var p1 = segRectInter(stepRect.c, toStepRect.c, stepRect)
+                    var p2 = segRectInter(stepRect.c, toStepRect.c, toStepRect)
+    
+                    if (!p1 || !p2) {
+                        continue
+                    }
+    
+                    canvas_arrow(p1.x, p1.y, p2.x, p2.y)
                 }
-
-                canvas_arrow(p1.x, p1.y, p2.x, p2.y)
             }
+        }
+    }
+
+    function findStep(stepName) {
+        for (var i = 0; i < steps.length; i++) {
+            if (steps[i].name === stepName)
+                return steps[i]
         }
     }
 
@@ -371,7 +508,7 @@
     }
 
 
-    function Step(name, x, y, links, paragraphs) {
+    function Step(name, x, y, paragraphs) {
         var _name
         var _self = this
         Object.defineProperty(this, 'name', {
@@ -386,17 +523,26 @@
                         nameCount++
                     }
                 }
+                var previousName = _name
                 if (nameCount === 0) {
                     _name = value
                 } else {
                     _name = value + '_' + nameCount
+                }
+
+                for (var i = 0; i < steps.length; i++) {
+                    for (var j = 0; j < steps[i].paragraphs.length; j++) {
+                        var paragraph = steps[i].paragraphs[j]
+                        if (paragraph.type === 'path' && paragraph.toStep === previousName) {
+                            paragraph.toStep = _name
+                        }
+                    }
                 }
             }
         })
         this.name = name
         this.x = x || 0
         this.y = y || 0
-        this.links = links || []
         this.paragraphs = paragraphs || []
     }
 })(interact, jQuery, window)

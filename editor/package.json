@@ -9,6 +9,7 @@
   "author": "Entrivax",
   "license": "MIT",
   "dependencies": {
-    "interactjs": "^1.3.4"
+    "interactjs": "^1.3.4",
+    "jquery-custom-select": "^1.4.2"
   }
 }

@@ -44,13 +44,41 @@ ul {
     color: #fff;
 }
 
+.lateral-menu-context-menu {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #1f2326;
+    white-space: nowrap;
+    background: #2f3136;
+    color: #cfd0d0;
+    border-radius: 5px;
+}
+
+.lateral-menu-context-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lateral-menu-context-menu li:hover {
+    background-color: #36393f;
+    color: #fff;
+}
+
 #lateral-menu {
     display: block;
     max-height: calc(100% - 40px);
     width: 250px;
     border-left-style: solid;
-    border-left-color: #1f2326;
-    border-left-width: 2px;
+    border-left-color: rgba(0, 0, 0, 0.6);
+    border-left-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgba(0, 0, 0, 0.6);
+    border-bottom-width: 1px;
+    border-bottom-left-radius: 5px;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.4);
     background-color: #2f3136;
     color: #cfd0d0;
     z-index: 1000;
@@ -80,7 +108,7 @@ ul {
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 3px;
     outline: none;
-    transition: all 0.3s
+    transition: all 0.3s;
 }
 
 .input-field input:focus {
@@ -98,22 +126,75 @@ ul {
 }
 
 .input-field.sortable button {
+    outline: none;
+}
+
+.input-field.sortable button.add-button {
     background-color: rgba(0, 0, 0, 0.2);
     color: rgba(255, 255, 255, 0.2);
     border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 3px;
     width: 100%;
     height: 2em;
-    outline: none;
     transition: all 0.2s;
     font-weight: 600;
     font-size: 1.2em;
 }
 
-.input-field.sortable button:hover {
+.input-field.sortable button.add-button:hover {
     background-color: rgba(255, 255, 255, 0.4);
     border: 2px dashed rgba(0, 0, 0, 0.5);
     color: rgba(0, 0, 0, 0.5);
+}
+
+.input-field.sortable .path-params .custom-select .custom-select__option {
+    background-color: #1E1F22;
+    border-color: rgba(0, 0, 0, 0.3);
+    color: #f6f6f6;
+    transition: all 0.2s;
+}
+
+.input-field.sortable .path-params .custom-select .custom-select__option:hover {
+    background-color: rgb(39, 40, 44);
+}
+
+.input-field.sortable .path-params .custom-select .custom-select__dropdown {
+    background-color: #1E1F22;
+    border-color: rgba(0, 0, 0, 0.3);
+    color: #f6f6f6;
+    transition: all 0.2s;
+}
+
+.input-field.sortable .path-params > *:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.input-field.sortable .path-params {
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+}
+
+.input-field.sortable .path-element,
+.input-field.sortable .text-element {
+    position: relative;
+}
+
+.input-field.sortable .remove-button {
+    position: absolute;
+    cursor: pointer;
+    right: 0;
+    transition: color 0.3s;
+}
+
+.input-field.sortable .remove-button:hover {
+    color: #fff;
+}
+
+.input-field.sortable .path-params .sub-title {
+    margin-bottom: 0px;
 }
 
 .input-field textarea {
@@ -123,7 +204,14 @@ ul {
     height: 60px;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 3px;
+    outline: none;
     resize: vertical;
+    transition: background-color,border-color 0.3s;
+}
+
+.input-field textarea:focus {
+    border-color: #7289da;
+    background-color: rgba(13, 37, 48, 0.1);
 }
 
 .sortable-placeholder {
