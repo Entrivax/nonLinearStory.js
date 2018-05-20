@@ -193,7 +193,8 @@ ul {
     color: #fff;
 }
 
-.input-field.sortable .path-params .sub-title {
+.input-field.sortable .path-params .sub-title,
+.input-field.sortable .path-params .expander:not(:last-child) {
     margin-bottom: 0px;
 }
 
@@ -212,6 +213,42 @@ ul {
 .input-field textarea:focus {
     border-color: #7289da;
     background-color: rgba(13, 37, 48, 0.1);
+}
+
+.input-field .expander {
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    height: 1em;
+}
+
+.input-field .expander.close {
+    border-bottom-width: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.input-field .expander:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.input-field .expander i {
+    transition: transform 0.3s;
+}
+
+.input-field .expander.close i {
+    transform: rotate(180deg);
+}
+
+.input-field .expansion {
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-top-width: 0px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .sortable-placeholder {

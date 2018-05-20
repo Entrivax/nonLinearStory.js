@@ -239,16 +239,41 @@
                         }
                         select.change(updateStepInfos)
                         
-                        var textArea = $('<textarea></textarea>')
+                        var textArea = $('<textarea class="textTextArea"></textarea>')
                         textArea.change(updateStepInfos)
                         
                         var pathParamsContainer = container.find('.path-params')
                         $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
                         select.appendTo(pathParamsContainer)
+                        select.customSelect()
+
                         $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
                         textArea.appendTo(pathParamsContainer)
+
+                        var extraContent = $('<div class="expansion"></div>')
+                        extraContent.hide()
+
+                        var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
+                        expander.click(function() {
+                            var $this = $(this)
+                            if ($this.hasClass('close')) {
+                                extraContent.slideUp(300)
+                                $this.removeClass('close')
+                            } else {
+                                extraContent.slideDown(300)
+                                $this.addClass('close')
+                            }
+                        })
+
+                        $('<div class="sub-title">On click:</div>').appendTo(extraContent)
+                        var onClickTextArea = $('<textarea class="onclick"></textarea>')
+                        onClickTextArea.change(updateStepInfos)
+                        onClickTextArea.appendTo(extraContent)
+
+                        expander.appendTo(pathParamsContainer)
+                        extraContent.appendTo(pathParamsContainer)
+
                         container.appendTo(paragraphs.find('ul'))
-                        select.customSelect()
                         updateStepInfos()
                     }
                 }
@@ -258,14 +283,15 @@
         for (var i = 0; i < selectedStep.paragraphs.length; i++) {
             var paragraph = selectedStep.paragraphs[i]
             if (paragraph.type === 'text') {
-                var textarea = $('<textarea></textarea>')
-                textarea.change(updateStepInfos)
-                textarea.val(paragraph.text)
                 var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span></li>')
                 container.find('.remove-button').click(function() {
                     container.remove()
                     updateStepInfos()
                 })
+
+                var textarea = $('<textarea></textarea>')
+                textarea.change(updateStepInfos)
+                textarea.val(paragraph.text)
                 textarea.appendTo(container)
                 container.appendTo(paragraphs.find('ul'))
             } else if (paragraph.type === 'path') {
@@ -287,7 +313,7 @@
                 select.val(paragraph.toStep || steps[0].name)
                 select.change(updateStepInfos)
                         
-                var textArea = $('<textarea></textarea>')
+                var textArea = $('<textarea class="textTextArea"></textarea>')
                 textArea.val(paragraph.text)
                 textArea.change(updateStepInfos)
                 
@@ -296,6 +322,31 @@
                 select.appendTo(pathParamsContainer)
                 $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
                 textArea.appendTo(pathParamsContainer)
+
+                var extraContent = $('<div class="expansion"></div>')
+                extraContent.hide()
+
+                var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
+                expander.click(function() {
+                    var $this = $(this)
+                    if ($this.hasClass('close')) {
+                        extraContent.slideUp(300)
+                        $this.removeClass('close')
+                    } else {
+                        extraContent.slideDown(300)
+                        $this.addClass('close')
+                    }
+                })
+
+                $('<div class="sub-title">On click:</div>').appendTo(extraContent)
+                var onClickTextArea = $('<textarea class="onclick"></textarea>')
+                onClickTextArea.val(paragraph.onClick)
+                onClickTextArea.change(updateStepInfos)
+                onClickTextArea.appendTo(extraContent)
+
+                expander.appendTo(pathParamsContainer)
+                extraContent.appendTo(pathParamsContainer)
+
                 container.appendTo(paragraphs.find('ul'))
                 select.customSelect()
             }
@@ -319,7 +370,8 @@
                     selectedStep.paragraphs.push({
                         type: 'path',
                         toStep: targetStepName,
-                        text: $element.find('textarea').val()
+                        text: $element.find('.textTextArea').val(),
+                        onClick: $element.find('.onclick').val(),
                     })
                 }
             }
@@ -506,7 +558,6 @@
             intersection = segInter(p1,p2,r4,r1);
         return intersection;
     }
-
 
     function Step(name, x, y, paragraphs) {
         var _name
