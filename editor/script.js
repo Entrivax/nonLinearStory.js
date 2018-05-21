@@ -670,7 +670,7 @@
     
     window.loadProject = function loadProject(project) {
         settings = new Settings(project.settings.startingStep)
-        steps = []
+        steps.length = 0
         for (var i = 0; i < project.steps.length; i++) {
             var step = project.steps[i]
             var stepToAdd = new Step(step.name, step.x, step.y, step.paragraphs, step.onDisplay, step.isVisible)
