@@ -13,7 +13,7 @@
         stepHeight = 6,
         selectedStep,
         movingElement,
-        settings = {},
+        settings = new Settings(),
         settingsModal
 
     $(function() {
@@ -91,7 +91,8 @@
 
         selectStep(null)
 
-        steps.push(new Step('startStep', 0, 0))
+        steps.push(new Step('startStep', 5, 5))
+        settings.startingStep = steps[0].name
 
         redraw()
     })
@@ -104,8 +105,6 @@
             option.val(steps[i].name)
             option.text(steps[i].name)
             option.appendTo(select)
-        }
-        if (settings.startingStep != null) {
         }
         select.val(settings.startingStep)
         select.customSelect('refresh')
@@ -668,6 +667,29 @@
             intersection = segInter(p1,p2,r4,r1);
         return intersection;
     }
+    
+    window.loadProject = function loadProject(project) {
+        settings = new Settings(project.settings.startingStep)
+        steps = []
+        for (var i = 0; i < project.steps.length; i++) {
+            var step = project.steps[i]
+            var stepToAdd = new Step(step.name, step.x, step.y, step.paragraphs, step.onDisplay, step.isVisible)
+            steps.push(stepToAdd)
+        }
+
+        selectStep(null)
+    }
+
+    window.exportProject = function exportProject() {
+        var project = {}
+        project.settings = JSON.parse(JSON.stringify(settings))
+        project.steps = JSON.parse(JSON.stringify(steps))
+        return project
+    }
+
+    function Settings(startingStep) {
+        this.startingStep = startingStep
+    }
 
     function Step(name, x, y, paragraphs, onDisplay, isVisible) {
         var _name
@@ -703,7 +725,8 @@
                         }
                     }
                 }
-            }
+            },
+            enumerable: true
         })
         this.name = name
         this.x = x || 0
