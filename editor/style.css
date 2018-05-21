@@ -211,12 +211,7 @@ ul {
     color: #fff;
 }
 
-.input-field.sortable .path-params .sub-title,
-.input-field.sortable .path-params .expander:not(:last-child) {
-    margin-bottom: 0px;
-}
-
-.input-field textarea {
+textarea {
     width: 100%;
     background-color: rgba(0, 0, 0, 0.2);
     color: #f6f6f6;
@@ -228,12 +223,12 @@ ul {
     transition: background-color 0.3s, border-color 0.3s;
 }
 
-.input-field textarea:focus {
+textarea:focus {
     border-color: #7289da;
     background-color: rgba(13, 37, 48, 0.1);
 }
 
-.input-field .expander {
+.expander {
     background-color: rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s;
     text-align: center;
@@ -242,31 +237,52 @@ ul {
     height: 1em;
 }
 
-.input-field .expander.close {
+.expander.close {
     border-bottom-width: 0px;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
 }
 
-.input-field .expander:hover {
+.expander:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.input-field .expander i {
+.expander i {
     transition: transform 0.3s;
 }
 
-.input-field .expander.close i {
+.expander.close i {
     transform: rotate(180deg);
 }
 
-.input-field .expansion {
+#lateral-menu > .expander {
+    margin-top: 20px;
+}
+
+.expansion {
     padding: 5px;
     background-color: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-top-width: 0px;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
+}
+
+.input-field .additionnal-params > *:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+#lateral-menu .sub-title,
+#lateral-menu .expander:not(:last-child) {
+    margin-bottom: 0px;
+}
+
+.input-field .additionnal-params {
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
 }
 
 .sortable-placeholder {
@@ -293,6 +309,15 @@ ul {
 
 .ui-dialog .ui-dialog-content {
     padding: 20px;
+}
+
+.ui-dialog .ui-dialog-title {
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.ui-widget-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .btn {

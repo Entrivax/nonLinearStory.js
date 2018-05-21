@@ -19,11 +19,10 @@
     $(function() {
         lateralMenu = $('#lateral-menu')
         canvas = $('#grid')[0]
-        canvas.height = $(window).height()
-        canvas.width = $(window).width()
+        canvas.height = $(window).height() || window.innerHeight
+        canvas.width = $(window).width() || window.innerWidth
         context = canvas.getContext('2d')
 
-        drawGrid()
         interact('#grid')
             .draggable({
                 restrict: {
@@ -37,13 +36,13 @@
             .on('tap', onClick)
 
         $(window).resize(function() {
-            canvas.height = $(window).height()
-            canvas.width = $(window).width()
+            canvas.height = $(window).height() || window.innerHeight
+            canvas.width = $(window).width() || window.innerWidth
             redraw()
         })
 
-        $('#grid').on('wheel', function() {
-            zoom += -event.deltaY / 1000
+        $('#grid').on('wheel', function(event) {
+            zoom += event.originalEvent.deltaY > 0 ? -0.1 : 0.1
             zoom = zoom < 0.1 ? 0.1 : (zoom > 5 ? 5 : zoom)
             redraw()
         })
@@ -194,7 +193,7 @@
         var step = new Step(
             'newStep',
             x,
-            y,
+            y
         )
 
         steps.push(step)
@@ -257,11 +256,42 @@
             return container
         }
 
+        function createExtraContainer(onDisplayLabel, onDisplay, onDisplayPlaceholder) {
+            var extraContent = $('<div class="expansion"></div>')
+            extraContent.hide()
+    
+            var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
+            expander.click(function() {
+                var $this = $(this)
+                if ($this.hasClass('close')) {
+                    extraContent.slideUp(300)
+                    $this.removeClass('close')
+                } else {
+                    extraContent.slideDown(300)
+                    $this.addClass('close')
+                }
+            })
+
+            var container = $('<div class="additionnal-params"></div>')
+            var label = $('<div class="sub-title"></div>')
+            label.text(onDisplayLabel)
+            label.appendTo(container)
+            var input = $('<textarea class="onDisplay"></textarea>')
+            input.attr('placeholder', onDisplayPlaceholder)
+            input.appendTo(container)
+            input.change(updateStepInfos)
+            input.val(onDisplay)
+
+            container.appendTo(extraContent)
+
+            return [expander, extraContent]
+        }
+
         var nameInput = createTextInput('Step name:', 'The name of the step', selectedStep.name)
 
         var paragraphs = createParagraphsContainer('Paragraphs:')
         paragraphs.find('ul').on('change', updateStepInfos)
-        paragraphs.find('button').click(function() {
+        paragraphs.find('button').click(function(event) {
             showContextMenu('lateral-menu-context-menu', event.pageX, event.pageY, [
                 {
                     text: 'New text element',
@@ -320,6 +350,7 @@
 
                         $('<div class="sub-title">On click:</div>').appendTo(extraContent)
                         var onClickTextArea = $('<textarea class="onclick"></textarea>')
+                        onClickTextArea.attr('placeholder', 'Javascript code here...')
                         onClickTextArea.change(updateStepInfos)
                         onClickTextArea.appendTo(extraContent)
 
@@ -393,6 +424,7 @@
 
                 $('<div class="sub-title">On click:</div>').appendTo(extraContent)
                 var onClickTextArea = $('<textarea class="onclick"></textarea>')
+                onClickTextArea.attr('placeholder', 'Javascript code here...')
                 onClickTextArea.val(paragraph.onClick)
                 onClickTextArea.change(updateStepInfos)
                 onClickTextArea.appendTo(extraContent)
@@ -404,6 +436,8 @@
                 select.customSelect()
             }
         }
+
+        var extraContainer = createExtraContainer('On display:', selectedStep.onDisplay, 'Javascript code here...')
         
         function updateStepInfos() {
             selectedStep.name = nameInput.find('input').val()
@@ -429,11 +463,15 @@
                 }
             }
 
+            selectedStep.onDisplay = extraContainer[1].find('.onDisplay').val()
+
             redraw()
         }
 
         nameInput.appendTo(lateralMenu)
         paragraphs.appendTo(lateralMenu)
+        extraContainer[0].appendTo(lateralMenu)
+        extraContainer[1].appendTo(lateralMenu)
         lateralMenu.show(100)
     }
 
