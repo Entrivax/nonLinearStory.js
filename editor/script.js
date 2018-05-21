@@ -34,6 +34,7 @@
             .on('dragmove', onDragMove)
             .on('dragend', onDragEnd)
             .on('tap', onClick)
+            .styleCursor(false)
 
         $(window).resize(function() {
             canvas.height = $(window).height() || window.innerHeight
@@ -42,8 +43,15 @@
         })
 
         $('#grid').on('wheel', function(event) {
-            zoom += event.originalEvent.deltaY > 0 ? -0.1 : 0.1
-            zoom = zoom < 0.1 ? 0.1 : (zoom > 5 ? 5 : zoom)
+            var zoomDelta = event.originalEvent.deltaY > 0 ? -0.1 : 0.1
+            var newZoom = zoom + zoomDelta
+            newZoom = newZoom < 0.1 ? 0.1 : (newZoom > 5 ? 5 : newZoom)
+            var zoomFactor = 1 - newZoom / zoom
+            offsetX += (event.originalEvent.x - offsetX) * zoomFactor
+            offsetY += (event.originalEvent.y - offsetY) * zoomFactor
+            offsetX = Math.round(offsetX)
+            offsetY = Math.round(offsetY)
+            zoom = newZoom
             redraw()
         })
 
@@ -83,7 +91,7 @@
 
         selectStep(null)
 
-        steps.push(new Step('startStep', 5, 10))
+        steps.push(new Step('startStep', 0, 0))
 
         redraw()
     })
