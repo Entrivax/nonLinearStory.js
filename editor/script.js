@@ -12,7 +12,9 @@
         stepWidth = 10,
         stepHeight = 6,
         selectedStep,
-        movingElement
+        movingElement,
+        settings = {},
+        settingsModal
 
     $(function() {
         lateralMenu = $('#lateral-menu')
@@ -62,6 +64,13 @@
             }])
         })
 
+        $('#settings').click(function() {
+            updateSettingsModal()
+            settingsModal.dialog('open')
+        })
+
+        initSettingsModal()
+
         $(document).bind('mousedown', function(event) {
             // Hide context menu if clicked elsewhere
             if ($(event.target).parents('.grid-context-menu').length === 0) {
@@ -75,10 +84,54 @@
 
         selectStep(null)
 
-        steps.push(new Step('pouet', 5, 10))
+        steps.push(new Step('startStep', 5, 10))
 
         redraw()
     })
+
+    function updateSettingsModal() {
+        var select = settingsModal.find('#starting-step')
+        select.empty()
+        for (var i = 0; i < steps.length; i++) {
+            var option = $('<option></option>')
+            option.val(steps[i].name)
+            option.text(steps[i].name)
+            option.appendTo(select)
+        }
+        if (settings.startingStep != null) {
+        }
+        select.val(settings.startingStep)
+        select.customSelect('refresh')
+    }
+
+    function initSettingsModal() {
+        settingsModal = $('<div></div>')
+        var row = $('<div class="row"></div>')
+        $('<div class="col-xs-12">Starting step:</div>').appendTo(row)
+        var inputContainer = $('<div class="col-xs-12"></div>')
+        var input = $('<select id="starting-step"></select>')
+        input.appendTo(inputContainer)
+        input.customSelect()
+        inputContainer.appendTo(row)
+        row.appendTo(settingsModal)
+
+        var buttonsContainer = $('<div class="buttons-container"></div>')
+        var closeButton = $('<div class="btn">Close</div>')
+        var saveButton = $('<div class="btn btn-primary">Save</div>')
+        closeButton.appendTo(buttonsContainer)
+        closeButton.click(function() {
+            settingsModal.dialog('close')
+        })
+        saveButton.appendTo(buttonsContainer)
+        saveButton.click(function() {
+            settingsModal.dialog('close')
+            settings.startingStep = settingsModal.find('#starting-step').val()
+        })
+        $('<div class="separator"></div>').appendTo(settingsModal)
+        buttonsContainer.appendTo(settingsModal)
+
+        settingsModal.dialog({ autoOpen: false, modal: true, draggable: false, resizable: false, minHeight: 50, title: 'Project settings' })
+    }
 
     function showContextMenu(menuClass, x, y, elements) {
         // Clear animation queue
@@ -579,6 +632,10 @@
                     _name = value
                 } else {
                     _name = value + '_' + nameCount
+                }
+
+                if (settings.startingStep === previousName) {
+                    settings.startingStep = _name
                 }
 
                 for (var i = 0; i < steps.length; i++) {
