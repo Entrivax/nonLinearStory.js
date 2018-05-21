@@ -264,7 +264,7 @@
             return container
         }
 
-        function createExtraContainer(onDisplayLabel, onDisplay, onDisplayPlaceholder) {
+        function createExtraContainer(onDisplayLabel, onDisplay, onDisplayPlaceholder, isVisibleLabel, isVisible, isVisiblePlaceholder) {
             var extraContent = $('<div class="expansion"></div>')
             extraContent.hide()
     
@@ -289,6 +289,15 @@
             input.appendTo(container)
             input.change(updateStepInfos)
             input.val(onDisplay)
+
+            label = $('<div class="sub-title"></div>')
+            label.text(isVisibleLabel)
+            label.appendTo(container)
+            input = $('<textarea class="isVisible"></textarea>')
+            input.attr('placeholder', isVisiblePlaceholder)
+            input.appendTo(container)
+            input.change(updateStepInfos)
+            input.val(isVisible)
 
             container.appendTo(extraContent)
 
@@ -445,7 +454,8 @@
             }
         }
 
-        var extraContainer = createExtraContainer('On display:', selectedStep.onDisplay, 'Javascript code here...')
+        var extraContainer = createExtraContainer('On display:', selectedStep.onDisplay, 'Javascript code here...',
+                                                'Is visible:', selectedStep.isVisible, 'Javascript code here... (must return boolean)')
         
         function updateStepInfos() {
             selectedStep.name = nameInput.find('input').val()
@@ -472,6 +482,7 @@
             }
 
             selectedStep.onDisplay = extraContainer[1].find('.onDisplay').val()
+            selectedStep.isVisible = extraContainer[1].find('.isVisible').val()
 
             redraw()
         }
@@ -658,7 +669,7 @@
         return intersection;
     }
 
-    function Step(name, x, y, paragraphs) {
+    function Step(name, x, y, paragraphs, onDisplay, isVisible) {
         var _name
         var _self = this
         Object.defineProperty(this, 'name', {
@@ -698,5 +709,7 @@
         this.x = x || 0
         this.y = y || 0
         this.paragraphs = paragraphs || []
+        this.onDisplay = onDisplay || ''
+        this.isVisible = isVisible || ''
     }
 })(interact, jQuery, window)
