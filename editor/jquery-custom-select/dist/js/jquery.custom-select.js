@@ -97,13 +97,13 @@ var CustomSelect = function ($) {
         });
         this._$value = this._$element.find("." + this._options.block + "__option--value");
   
+        var usePlaceHolder = false
         if (this._options.placeholder) {
           // Check explicitly selected option
-          if (this._$select.find('[selected]').length) {
-            this._options.placeholder = false;
-          } else {
+          if (!(this._$select.find('[selected]').length)) {
             this._$value.html(this._options.placeholder); // Set select value to null
   
+            usePlaceHolder = true
   
             this._$select.prop('selectedIndex', -1);
           }
@@ -117,7 +117,7 @@ var CustomSelect = function ($) {
           if (el === _this._$select.find(':selected').text().trim()) {
             _this._$value.text(el).addClass(cssClass).data('class', cssClass);
   
-            if (_this._options.includeValue || _this._options.placeholder) {
+            if (_this._options.includeValue || usePlaceHolder) {
               $option.addClass(cssClass);
               $option.addClass(_this._optionSelectedModifier);
   

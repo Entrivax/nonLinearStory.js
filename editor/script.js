@@ -34,7 +34,9 @@
             .on('dragmove', onDragMove)
             .on('dragend', onDragEnd)
             .on('tap', onClick)
+            .on('keyup', onKeyUp)
             .styleCursor(false)
+
 
         $(window).resize(function() {
             canvas.height = $(window).height() || window.innerHeight
@@ -97,6 +99,12 @@
         redraw()
     })
 
+    function onKeyUp(event) {
+        if (event.keyCode === 46) { // Delete keycode
+            removeSelectedStep()
+        }
+    }
+
     function updateSettingsModal() {
         var select = settingsModal.find('#starting-step')
         select.empty()
@@ -104,6 +112,9 @@
             var option = $('<option></option>')
             option.val(steps[i].name)
             option.text(steps[i].name)
+            if (steps[i].name === settings.startingStep) {
+                option.attr('selected', 'selected')
+            }
             option.appendTo(select)
         }
         select.val(settings.startingStep)
@@ -117,7 +128,9 @@
         var inputContainer = $('<div class="col-xs-12"></div>')
         var input = $('<select id="starting-step"></select>')
         input.appendTo(inputContainer)
-        input.customSelect()
+        input.customSelect({
+            placeholder: '<span>Please select a step</span>'
+        })
         inputContainer.appendTo(row)
         row.appendTo(settingsModal)
 
@@ -205,6 +218,37 @@
 
         steps.push(step)
         selectStep(step)
+        redraw()
+    }
+
+    function removeSelectedStep() {
+        if (selectedStep == null)
+            return
+        
+        for (var i = 0; i < steps.length; i++) {
+            var step = steps[i]
+            for (var j = 0; j < step.paragraphs.length; j++) {
+                var paragraph = step.paragraphs[j]
+                if (paragraph.type === 'path' && paragraph.toStep === selectedStep.name) {
+                    paragraph.toStep = null
+                }
+            }
+        }
+
+        for (var indexOfStep = 0; indexOfStep < steps.length; indexOfStep++) {
+            var step = steps[indexOfStep]
+            if (step.name === selectedStep.name)
+                break
+        }
+
+        if (indexOfStep !== steps.length) {
+            steps.splice(indexOfStep, 1)
+        }
+
+        if (selectedStep.name === settings.startingStep) {
+            settings.startingStep = null
+        }
+
         redraw()
     }
 
@@ -344,7 +388,9 @@
                         var pathParamsContainer = container.find('.path-params')
                         $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
                         select.appendTo(pathParamsContainer)
-                        select.customSelect()
+                        select.customSelect({
+                            placeholder: '<span>Please select a step</span>'
+                        })
 
                         $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
                         textArea.appendTo(pathParamsContainer)
@@ -407,10 +453,12 @@
                     var option = $('<option></option>')
                     option.text(steps[j].name)
                     option.val(steps[j].name)
+                    if (steps[j].name === paragraph.toStep) {
+                        option.attr('selected', 'selected')
+                    }
                     option.appendTo(select)
                 }
 
-                select.val(paragraph.toStep || steps[0].name)
                 select.change(updateStepInfos)
                         
                 var textArea = $('<textarea class="textTextArea"></textarea>')
@@ -449,7 +497,9 @@
                 extraContent.appendTo(pathParamsContainer)
 
                 container.appendTo(paragraphs.find('ul'))
-                select.customSelect()
+                select.customSelect({
+                    placeholder: '<span>Please select a step</span>'
+                })
             }
         }
 
