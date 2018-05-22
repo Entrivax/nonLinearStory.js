@@ -248,8 +248,8 @@
         if (selectedStep.name === settings.startingStep) {
             settings.startingStep = null
         }
-
-        redraw()
+        
+        selectStep(null)
     }
 
     function onClick(event) {
