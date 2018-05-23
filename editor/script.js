@@ -93,8 +93,10 @@
 
         selectStep(null)
 
-        steps.push(new Step('startStep', 5, 5))
-        settings.startingStep = steps[0].name
+        if (!tryLoadFromLocalStorage()) {
+            steps.push(new Step('startStep', 5, 5))
+            settings.startingStep = steps[0].name
+        }
 
         redraw()
     })
@@ -145,6 +147,7 @@
         saveButton.click(function() {
             settingsModal.dialog('close')
             settings.startingStep = settingsModal.find('#starting-step').val()
+            saveProjectIntoLocalStorage()
         })
         $('<div class="separator"></div>').appendTo(settingsModal)
         buttonsContainer.appendTo(settingsModal)
@@ -206,6 +209,8 @@
     }
 
     function onDragEnd(event) {
+        if (movingElement)
+            saveProjectIntoLocalStorage()
         movingElement = undefined
     }
 
@@ -218,6 +223,7 @@
 
         steps.push(step)
         selectStep(step)
+        saveProjectIntoLocalStorage()
         redraw()
     }
 
@@ -250,6 +256,7 @@
         }
         
         selectStep(null)
+        saveProjectIntoLocalStorage()
     }
 
     function onClick(event) {
@@ -542,6 +549,8 @@
             selectedStep.onDisplay = extraContainer[1].find('.onDisplay').val()
             selectedStep.isVisible = extraContainer[1].find('.isVisible').val()
 
+            saveProjectIntoLocalStorage()
+
             redraw()
         }
 
@@ -727,7 +736,9 @@
         return intersection;
     }
     
-    window.loadProject = function loadProject(project) {
+    window.loadProject = loadProject
+
+    function loadProject(project) {
         settings = new Settings(project.settings.startingStep)
         steps.length = 0
         for (var i = 0; i < project.steps.length; i++) {
@@ -739,11 +750,32 @@
         selectStep(null)
     }
 
-    window.exportProject = function exportProject() {
+    window.exportProject = exportProject
+
+    function exportProject() {
         var project = {}
         project.settings = JSON.parse(JSON.stringify(settings))
         project.steps = JSON.parse(JSON.stringify(steps))
         return project
+    }
+
+    function tryLoadFromLocalStorage() {
+        try {
+            var projectAsJson = localStorage.getItem('currentProject')
+            if (projectAsJson) {
+                loadProject(JSON.parse(projectAsJson))
+            } else {
+                return false
+            }
+        } catch (exception) {
+            console.error(exception)
+            return false
+        }
+        return true
+    }
+
+    function saveProjectIntoLocalStorage() {
+        localStorage.setItem('currentProject', JSON.stringify(exportProject()))
     }
 
     function Settings(startingStep) {
