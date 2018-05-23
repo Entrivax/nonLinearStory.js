@@ -382,6 +382,14 @@
             textarea.val(paragraph ? paragraph.text : '')
             textarea.appendTo(paramsContainer)
 
+            var checkbox = $('<input type="checkbox" class="is-text-js">')
+            checkbox.change(updateStepInfos)
+            checkbox.prop('checked', paragraph ? paragraph.isTextJavascript : false)
+            checkbox.appendTo(paramsContainer)
+            label = $('<span></span>')
+            label.text('Is text JavaScript')
+            label.appendTo(paramsContainer)
+
             var extraContent = $('<div class="expansion"></div>')
             extraContent.hide()
 
@@ -434,16 +442,25 @@
             }
 
             select.change(updateStepInfos)
-                    
+            
+            var paramsContainer = container.find('.path-params')
+
             var textArea = $('<textarea class="textTextArea"></textarea>')
             textArea.val(paragraph ? paragraph.text : '')
             textArea.change(updateStepInfos)
-            
-            var pathParamsContainer = container.find('.path-params')
-            $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
-            select.appendTo(pathParamsContainer)
-            $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
-            textArea.appendTo(pathParamsContainer)
+
+            $('<div class="sub-title">Target step:</div>').appendTo(paramsContainer)
+            select.appendTo(paramsContainer)
+            $('<div class="sub-title">Text:</div>').appendTo(paramsContainer)
+            textArea.appendTo(paramsContainer)
+
+            var checkbox = $('<input type="checkbox" class="is-text-js">')
+            checkbox.change(updateStepInfos)
+            checkbox.prop('checked', paragraph ? paragraph.isTextJavascript : false)
+            checkbox.appendTo(paramsContainer)
+            var label = $('<span></span>')
+            label.text('Is text JavaScript')
+            label.appendTo(paramsContainer)
 
             var extraContent2 = $('<div class="expansion"></div>')
             extraContent2.hide()
@@ -467,7 +484,7 @@
             onClickTextArea.change(updateStepInfos)
             onClickTextArea.appendTo(extraContent2)
                     
-            var label = $('<div class="sub-title"></div>')
+            label = $('<div class="sub-title"></div>')
             label.text('Is visible:')
             label.appendTo(extraContent2)
             var input = $('<textarea class="isVisible"></textarea>')
@@ -476,8 +493,8 @@
             input.change(updateStepInfos)
             input.val(paragraph ? paragraph.isVisible : '')
 
-            expander.appendTo(pathParamsContainer)
-            extraContent2.appendTo(pathParamsContainer)
+            expander.appendTo(paramsContainer)
+            extraContent2.appendTo(paramsContainer)
 
             container.appendTo(paragraphs.find('ul'))
             select.customSelect({
@@ -507,6 +524,7 @@
                         type: 'text',
                         text: $element.find('textarea').val(),
                         isVisible: $element.find('textarea.isVisible').val(),
+                        isTextJavascript: $element.find('input.is-text-js').prop('checked'),
                     })
                 } else if ($element.hasClass('path-element')) {
                     var targetStepName = $element.find('select').val()
@@ -516,6 +534,7 @@
                         text: $element.find('.textTextArea').val(),
                         onClick: $element.find('.onclick').val(),
                         isVisible: $element.find('textarea.isVisible').val(),
+                        isTextJavascript: $element.find('input.is-text-js').prop('checked'),
                     })
                 }
             }
