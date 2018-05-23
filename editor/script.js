@@ -300,6 +300,7 @@
             var sortable = $('<ul></ul>')
             sortable.sortable({
                 placeholder: 'sortable-placeholder',
+                update: updateStepInfos
             })
             sortable.appendTo(container)
             var button = $('<button class="add-button"><i class="fas fa-plus"></i></button>')
@@ -347,244 +348,151 @@
                 {
                     text: 'New text element',
                     onClick: function() {
-                        var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
-
-                        container.find('.remove-button').click(function() {
-                            container.remove()
-                            updateStepInfos()
-                        })
-
-                        var paramsContainer = container.find('.path-params')
-                        
-                        var label = $('<div class="sub-title"></div>')
-                        label.text('Text:')
-                        label.appendTo(paramsContainer)
-                        var textArea = $('<textarea class="textTextArea"></textarea>')
-                        textArea.change(updateStepInfos)
-                        textArea.appendTo(paramsContainer)
-
-                        var extraContent = $('<div class="expansion"></div>')
-                        extraContent.hide()
-
-                        var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                        expander.click(function() {
-                            var $this = $(this)
-                            if ($this.hasClass('close')) {
-                                extraContent.slideUp(300)
-                                $this.removeClass('close')
-                            } else {
-                                extraContent.slideDown(300)
-                                $this.addClass('close')
-                            }
-                        })
-
-                        label = $('<div class="sub-title"></div>')
-                        label.text('Is visible:')
-                        label.appendTo(extraContent)
-                        var input = $('<textarea class="isVisible"></textarea>')
-                        input.attr('placeholder', 'Javascript code here... (must return boolean)')
-                        input.appendTo(extraContent)
-                        input.change(updateStepInfos)
-
-                        expander.appendTo(paramsContainer)
-                        extraContent.appendTo(paramsContainer)
-
-                        container.appendTo(paragraphs.find('ul'))
+                        createTextParagraph(null)
                         updateStepInfos()
                     }
                 },
                 {
                     text: 'New path',
                     onClick: function() {
-                        var container = $('<li class="path-element"><i class="fas fa-sort"></i> <span>Path:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
-                        container.find('.remove-button').click(function() {
-                            container.remove()
-                            updateStepInfos()
-                        })
-                        var select = $('<select></select>')
-                        for (var i = 0; i < steps.length; i++) {
-                            var option = $('<option></option>')
-                            option.text(steps[i].name)
-                            option.val(steps[i].name)
-                            option.appendTo(select)
-                        }
-                        select.change(updateStepInfos)
-                        
-                        var textArea = $('<textarea class="textTextArea"></textarea>')
-                        textArea.change(updateStepInfos)
-                        
-                        var pathParamsContainer = container.find('.path-params')
-                        $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
-                        select.appendTo(pathParamsContainer)
-                        select.customSelect({
-                            placeholder: '<span>Please select a step</span>'
-                        })
-
-                        $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
-                        textArea.appendTo(pathParamsContainer)
-
-                        var extraContent = $('<div class="expansion"></div>')
-                        extraContent.hide()
-
-                        var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                        expander.click(function() {
-                            var $this = $(this)
-                            if ($this.hasClass('close')) {
-                                extraContent.slideUp(300)
-                                $this.removeClass('close')
-                            } else {
-                                extraContent.slideDown(300)
-                                $this.addClass('close')
-                            }
-                        })
-
-                        $('<div class="sub-title">On click:</div>').appendTo(extraContent)
-                        var onClickTextArea = $('<textarea class="onclick"></textarea>')
-                        onClickTextArea.attr('placeholder', 'Javascript code here...')
-                        onClickTextArea.change(updateStepInfos)
-                        onClickTextArea.appendTo(extraContent)
-                        
-                        var label = $('<div class="sub-title"></div>')
-                        label.text('Is visible:')
-                        label.appendTo(extraContent)
-                        var input = $('<textarea class="isVisible"></textarea>')
-                        input.attr('placeholder', 'Javascript code here... (must return boolean)')
-                        input.appendTo(extraContent)
-                        input.change(updateStepInfos)
-
-                        expander.appendTo(pathParamsContainer)
-                        extraContent.appendTo(pathParamsContainer)
-
-                        container.appendTo(paragraphs.find('ul'))
+                        createPathParagraph(null)
                         updateStepInfos()
                     }
                 }
             ])
         })
 
+        var extraContainer = createExtraContainer('On display:', selectedStep.onDisplay, 'Javascript code here...')
+
+        function createTextParagraph(paragraph) {
+            var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
+            container.find('.remove-button').click(function() {
+                container.remove()
+                updateStepInfos()
+            })
+
+            var paramsContainer = container.find('.path-params')
+                    
+            var label = $('<div class="sub-title"></div>')
+            label.text('Text:')
+            label.appendTo(paramsContainer)
+            
+            var textarea = $('<textarea class="textTextArea"></textarea>')
+            textarea.change(updateStepInfos)
+            textarea.val(paragraph ? paragraph.text : '')
+            textarea.appendTo(paramsContainer)
+
+            var extraContent = $('<div class="expansion"></div>')
+            extraContent.hide()
+
+            var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
+            expander.click(function() {
+                var $this = $(this)
+                if ($this.hasClass('close')) {
+                    extraContent.slideUp(300)
+                    $this.removeClass('close')
+                } else {
+                    extraContent.slideDown(300)
+                    $this.addClass('close')
+                }
+            })
+
+            label = $('<div class="sub-title"></div>')
+            label.text('Is visible:')
+            label.appendTo(extraContent)
+            var input = $('<textarea class="isVisible"></textarea>')
+            input.attr('placeholder', 'Javascript code here... (must return boolean)')
+            input.appendTo(extraContent)
+            input.val(paragraph ? paragraph.isVisible : '')
+            input.change(updateStepInfos)
+
+            expander.appendTo(paramsContainer)
+            extraContent.appendTo(paramsContainer)
+
+            paramsContainer.appendTo(container)
+
+            container.appendTo(paragraphs.find('ul'))
+        }
+
+        function createPathParagraph(paragraph) {
+            var container = $('<li class="path-element"><i class="fas fa-sort"></i> <span>Path:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
+            container.find('.remove-button').click(function() {
+                container.remove()
+                updateStepInfos()
+            })
+
+            var select = $('<select></select>')
+
+            for (var j = 0; j < steps.length; j++) {
+                var option = $('<option></option>')
+                option.text(steps[j].name)
+                option.val(steps[j].name)
+                if (paragraph && steps[j].name === paragraph.toStep) {
+                    option.attr('selected', 'selected')
+                }
+                option.appendTo(select)
+            }
+
+            select.change(updateStepInfos)
+                    
+            var textArea = $('<textarea class="textTextArea"></textarea>')
+            textArea.val(paragraph ? paragraph.text : '')
+            textArea.change(updateStepInfos)
+            
+            var pathParamsContainer = container.find('.path-params')
+            $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
+            select.appendTo(pathParamsContainer)
+            $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
+            textArea.appendTo(pathParamsContainer)
+
+            var extraContent2 = $('<div class="expansion"></div>')
+            extraContent2.hide()
+
+            var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
+            expander.click(function() {
+                var $this = $(this)
+                if ($this.hasClass('close')) {
+                    extraContent2.slideUp(300)
+                    $this.removeClass('close')
+                } else {
+                    extraContent2.slideDown(300)
+                    $this.addClass('close')
+                }
+            })
+
+            $('<div class="sub-title">On click:</div>').appendTo(extraContent2)
+            var onClickTextArea = $('<textarea class="onclick"></textarea>')
+            onClickTextArea.attr('placeholder', 'Javascript code here...')
+            onClickTextArea.val(paragraph ? paragraph.onClick : '')
+            onClickTextArea.change(updateStepInfos)
+            onClickTextArea.appendTo(extraContent2)
+                    
+            var label = $('<div class="sub-title"></div>')
+            label.text('Is visible:')
+            label.appendTo(extraContent2)
+            var input = $('<textarea class="isVisible"></textarea>')
+            input.attr('placeholder', 'Javascript code here... (must return boolean)')
+            input.appendTo(extraContent2)
+            input.change(updateStepInfos)
+            input.val(paragraph ? paragraph.isVisible : '')
+
+            expander.appendTo(pathParamsContainer)
+            extraContent2.appendTo(pathParamsContainer)
+
+            container.appendTo(paragraphs.find('ul'))
+            select.customSelect({
+                placeholder: '<span>Please select a step</span>'
+            })
+        }
+
         for (var i = 0; i < selectedStep.paragraphs.length; i++) {
             var paragraph = selectedStep.paragraphs[i]
             if (paragraph.type === 'text') {
-                var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
-                container.find('.remove-button').click(function() {
-                    container.remove()
-                    updateStepInfos()
-                })
-
-                var paramsContainer = container.find('.path-params')
-                        
-                var label = $('<div class="sub-title"></div>')
-                label.text('Text:')
-                label.appendTo(paramsContainer)
-                
-                var textarea = $('<textarea class="textTextArea"></textarea>')
-                textarea.change(updateStepInfos)
-                textarea.val(paragraph.text)
-                textarea.appendTo(paramsContainer)
-
-                var extraContent = $('<div class="expansion"></div>')
-                extraContent.hide()
-
-                var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                expander.click(function() {
-                    var $this = $(this)
-                    if ($this.hasClass('close')) {
-                        extraContent.slideUp(300)
-                        $this.removeClass('close')
-                    } else {
-                        extraContent.slideDown(300)
-                        $this.addClass('close')
-                    }
-                })
-
-                label = $('<div class="sub-title"></div>')
-                label.text('Is visible:')
-                label.appendTo(extraContent)
-                var input = $('<textarea class="isVisible"></textarea>')
-                input.attr('placeholder', 'Javascript code here... (must return boolean)')
-                input.appendTo(extraContent)
-                input.val(paragraph.isVisible)
-                input.change(updateStepInfos)
-
-                expander.appendTo(paramsContainer)
-                extraContent.appendTo(paramsContainer)
-
-                paramsContainer.appendTo(container)
-
-                container.appendTo(paragraphs.find('ul'))
+                createTextParagraph(paragraph)
             } else if (paragraph.type === 'path') {
-                var container = $('<li class="path-element"><i class="fas fa-sort"></i> <span>Path:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
-                container.find('.remove-button').click(function() {
-                    container.remove()
-                    updateStepInfos()
-                })
-
-                var select = $('<select></select>')
-
-                for (var j = 0; j < steps.length; j++) {
-                    var option = $('<option></option>')
-                    option.text(steps[j].name)
-                    option.val(steps[j].name)
-                    if (steps[j].name === paragraph.toStep) {
-                        option.attr('selected', 'selected')
-                    }
-                    option.appendTo(select)
-                }
-
-                select.change(updateStepInfos)
-                        
-                var textArea = $('<textarea class="textTextArea"></textarea>')
-                textArea.val(paragraph.text)
-                textArea.change(updateStepInfos)
-                
-                var pathParamsContainer = container.find('.path-params')
-                $('<div class="sub-title">Target step:</div>').appendTo(pathParamsContainer)
-                select.appendTo(pathParamsContainer)
-                $('<div class="sub-title">Text:</div>').appendTo(pathParamsContainer)
-                textArea.appendTo(pathParamsContainer)
-
-                var extraContent2 = $('<div class="expansion"></div>')
-                extraContent2.hide()
-
-                var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                expander.click(function() {
-                    var $this = $(this)
-                    if ($this.hasClass('close')) {
-                        extraContent2.slideUp(300)
-                        $this.removeClass('close')
-                    } else {
-                        extraContent2.slideDown(300)
-                        $this.addClass('close')
-                    }
-                })
-
-                $('<div class="sub-title">On click:</div>').appendTo(extraContent2)
-                var onClickTextArea = $('<textarea class="onclick"></textarea>')
-                onClickTextArea.attr('placeholder', 'Javascript code here...')
-                onClickTextArea.val(paragraph.onClick)
-                onClickTextArea.change(updateStepInfos)
-                onClickTextArea.appendTo(extraContent2)
-                        
-                var label = $('<div class="sub-title"></div>')
-                label.text('Is visible:')
-                label.appendTo(extraContent2)
-                var input = $('<textarea class="isVisible"></textarea>')
-                input.attr('placeholder', 'Javascript code here... (must return boolean)')
-                input.appendTo(extraContent2)
-                input.change(updateStepInfos)
-                input.val(paragraph.isVisible)
-
-                expander.appendTo(pathParamsContainer)
-                extraContent2.appendTo(pathParamsContainer)
-
-                container.appendTo(paragraphs.find('ul'))
-                select.customSelect({
-                    placeholder: '<span>Please select a step</span>'
-                })
+                createPathParagraph(paragraph)
             }
         }
-
-        var extraContainer = createExtraContainer('On display:', selectedStep.onDisplay, 'Javascript code here...')
         
         function updateStepInfos() {
             selectedStep.name = nameInput.find('input').val()
