@@ -3,6 +3,7 @@
         <meta charset="UTF-8">
         <title>NLS Editor</title>
         <script src="./node_modules/interactjs/dist/interact.js"></script>
+        <script src="./node_modules/underscore/underscore.js"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
         <script src="./jquery-ui/jquery-ui.js"></script>
@@ -12,6 +13,33 @@
         <link href="./jquery-custom-select/dist/css/jquery.custom-select.css" type="text/css" rel="stylesheet">
         <link href="./node_modules/flexboxgrid/css/flexboxgrid.min.css" type="text/css" rel="stylesheet">
         <link href="./style.css" type="text/css" rel="stylesheet">
+
+        <script>
+            $(function() {
+                var nlsEditor = new NLSEditor()
+
+                $('#compile-project').click(function() {
+                    saveFile(new Blob([ nlsEditor.createJs() ], { type: 'application/javascript' }), 'story.js')
+                })
+            })
+
+            function saveFile(blob, filename) {
+                if (window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveOrOpenBlob(blob, filename);
+                } else {
+                    var a = $('<a></a>')
+                    a.appendTo($('body'))
+                    var url = window.URL.createObjectURL(blob)
+                    a[0].href = url
+                    a[0].download = filename
+                    a[0].click()
+                    setTimeout(() => {
+                        window.URL.revokeObjectURL(url)
+                        a.remove()
+                    }, 0)
+                }
+            }
+        </script>
     </head>
 
     <body>
@@ -20,6 +48,7 @@
             <span id="settings"><i class="fas fa-cog fa-lg"></i></span>
             <span id="open-project"><i class="fas fa-folder-open fa-lg"></i></span>
             <span id="save-project"><i class="fas fa-save fa-lg"></i></span>
+            <span id="compile-project"><i class="fas fa-arrow-alt-circle-down fa-lg"></i></span>
         </div>
         <div id="lateral-menu"></div>
         <ul class="grid-context-menu">
