@@ -1,3 +1,5 @@
+Templates = {}
+
 ;(function(interact, $, window){
     'use strict';
 
@@ -839,73 +841,9 @@
         }
     
         function exportationTemplate() {
-            return [';(function($) {',
-            '    $(document).ready(function() {',
-            '        var story = new NLSStory([',
-            '        <% _(steps).each(function(step) { %>',
-            '            new NLSStep(\'<%= step.name %>\', [',
-            '            <% _(step.paragraphs).each(function(paragraph) { %>',
-            '                <% if (paragraph.type === \'text\') { %>',
-            '                new NLSText(',
-            '                    <% if (paragraph.isTextJavascript) { %>',
-            '                    function(nls) {',
-            '                        <%= paragraph.text %>',
-            '                    },',
-            '                    <% } else { %>',
-            '                    \'<%= paragraph.text %>\',',
-            '                    <% } %>',
-            '                    <% if (paragraph.isVisible) { %>',
-            '                    function(nls) {',
-            '                        <%= paragraph.isVisible %>',
-            '                    }',
-            '                    <% } else { %>',
-            '                    undefined',
-            '                    <% } %>',
-            '                ),',
-            '                <% } else if (paragraph.type === \'path\') { %>',
-            '                new NLSAction(',
-            '                    <% if (paragraph.isTextJavascript) { %>',
-            '                    function(nls) {',
-            '                        <%= paragraph.text %>',
-            '                    },',
-            '                    <% } else { %>',
-            '                    \'<%= paragraph.text %>\',',
-            '                    <% } %>',
-            '                    \'<%= paragraph.toStep %>\',',
-            '                    <% if (paragraph.onClick) { %>',
-            '                    function(nls) {',
-            '                        <%= paragraph.onClick %>',
-            '                    },',
-            '                    <% } else { %>',
-            '                    undefined,',
-            '                    <% } %>',
-            '                    <% if (paragraph.isVisible) { %>',
-            '                    function(nls) {',
-            '                        <%= paragraph.isVisible %>',
-            '                    }',
-            '                    <% } else { %>',
-            '                    undefined',
-            '                    <% } %>',
-            '                ),',
-            '                <% } %>',
-            '            <% }) %>',
-            '            ]),',
-            '        <% }) %>',
-            '        ]);',
-            '        var nls = new NonLinearStory(story, {',
-            '            baseSelector: \'nls\',',
-            '            initialStep: \'<%= settings.startingStep %>\',',
-            '            outAnimationClass: \'fade-out\',',
-            '            outAnimationDuration: 200,',
-            '            inAnimationClass: \'fade-in\',',
-            '            inAnimationDuration: 200,',
-            '        });',
-            
-            '        nls.start();',
-            '    })',
-            '})(jQuery);',]
+            return Templates['exportationTemplate.ejs']
                 .join('\n')
                 .replace(/(?:\s*)(\<%(?!=).*)/g, '$1') // Replace whitespace only occupied by logic in template
         }
     }
-})(interact, jQuery, window)
+})(interact, jQuery, window);
