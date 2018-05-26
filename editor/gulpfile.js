@@ -37,7 +37,7 @@ function createVariableFromTemplate() {
         fileName = fileName[fileName.length - 1]
         fileName = fileName.replace(/\'/g, '\\\'')
         var prefix = 'Templates[\'' + fileName + '\'] = [\n'
-        file.contents = Buffer.concat([ new Buffer(prefix), file.contents, new Buffer('\n];') ])
+        file.contents = Buffer.concat([ new Buffer(prefix), file.contents, new Buffer('\n].join(\'\\n\').replace(/(?:\\s*)(\\<%(?!=).*)/g, \'$1\');') ])
         this.push(file)
         cb()
     })

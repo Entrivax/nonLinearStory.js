@@ -821,7 +821,7 @@ Templates = {}
         this.createJs = createJs
         
         function createJs() {
-            var compiledTemplate = _.template(exportationTemplate())
+            var compiledTemplate = _.template(Templates['exportationTemplate.ejs'])
             var project = exportProject()
             project.escapeString = function(str) {
                 return str.replace(/\'/g, '\\\'').replace(/(?:\r\n|\r|\n)/g, '<br>')
@@ -894,12 +894,6 @@ Templates = {}
             this.y = y || 0
             this.paragraphs = paragraphs || []
             this.onDisplay = onDisplay || ''
-        }
-    
-        function exportationTemplate() {
-            return Templates['exportationTemplate.ejs']
-                .join('\n')
-                .replace(/(?:\s*)(\<%(?!=).*)/g, '$1') // Replace whitespace only occupied by logic in template
         }
     }
 })(interact, jQuery, window);
