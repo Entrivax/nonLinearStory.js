@@ -2,7 +2,7 @@
     $(document).ready(function() {
         var story = new NLSStory([
         <% _(steps).each(function(step) { %>
-            new NLSStep('<%= step.name %>', [
+            new NLSStep('<%= escapeString(step.name) %>', [
             <% _(step.paragraphs).each(function(paragraph) { %>
                 <% if (paragraph.type === 'text') { %>
                 new NLSText(
@@ -11,7 +11,7 @@
                         <%= paragraph.text %>
                     },
                     <% } else { %>
-                    '<%= paragraph.text %>',
+                    '<%= escapeString(paragraph.text) %>',
                     <% } %>
                     <% if (paragraph.isVisible) { %>
                     function(nls) {
@@ -25,12 +25,12 @@
                 new NLSAction(
                     <% if (paragraph.isTextJavascript) { %>
                     function(nls) {
-                        <%= paragraph.text %>
+                        <%= escapeString(paragraph.text) %>
                     },
                     <% } else { %>
-                    '<%= paragraph.text %>',
+                    '<%= escapeString(paragraph.text) %>',
                     <% } %>
-                    '<%= paragraph.toStep %>',
+                    '<%= escapeString(paragraph.toStep) %>',
                     <% if (paragraph.onClick) { %>
                     function(nls) {
                         <%= paragraph.onClick %>

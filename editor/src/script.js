@@ -770,7 +770,11 @@ Templates = {}
         
         function createJs() {
             var compiledTemplate = _.template(exportationTemplate())
-            return compiledTemplate(exportProject())
+            var project = exportProject()
+            project.escapeString = function(str) {
+                return str.replace(/\'/g, '\\\'').replace(/(?:\r\n|\r|\n)/g, '<br>')
+            }
+            return compiledTemplate(project)
         }
     
         function tryLoadFromLocalStorage() {
