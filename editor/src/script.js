@@ -14,10 +14,12 @@ Templates = {}
             steps = [],
             stepWidth = 10,
             stepHeight = 6,
-            selectedStep,
-            movingElement,
+            selectedSteps = [],
+            movingElements = [],
             settings = new Settings(),
-            settingsModal
+            settingsModal,
+            selectorInfo,
+            isShiftKeyPressed = false
     
         $(function() {
             lateralMenu = $('#lateral-menu')
@@ -38,6 +40,7 @@ Templates = {}
                 .on('dragend', onDragEnd)
                 .on('tap', onClick)
                 .on('keyup', onKeyUp)
+                .on('keydown', onKeyDown)
                 .styleCursor(false)
     
     
@@ -107,6 +110,14 @@ Templates = {}
         function onKeyUp(event) {
             if (event.keyCode === 46) { // Delete keycode
                 removeSelectedStep()
+            } else if (event.keyCode === 16) {
+                isShiftKeyPressed = false
+            }
+        }
+
+        function onKeyDown(event) {
+            if (event.keyCode === 16) {
+                isShiftKeyPressed = true
             }
         }
     
@@ -187,35 +198,46 @@ Templates = {}
         }
     
         function onDragMove(event) {
-            if (movingElement === undefined) {
+            if (movingElements.length === 0) {
                 offsetX += event.dx
                 offsetY += event.dy
             } else {
-                movingElement.element.x = Math.floor((event.pageX - offsetX - movingElement.mouseElementOffsetX) / (gridSize * zoom))
-                movingElement.element.y = Math.floor((event.pageY - offsetY - movingElement.mouseElementOffsetY) / (gridSize * zoom))
+                for (var i = 0; i < movingElements.length; i++) {
+                    var movingElement = movingElements[i]
+                    movingElement.element.x = Math.floor((event.pageX - offsetX - movingElement.mouseElementOffsetX) / (gridSize * zoom))
+                    movingElement.element.y = Math.floor((event.pageY - offsetY - movingElement.mouseElementOffsetY) / (gridSize * zoom))
+                }
             }
             redraw()
         }
     
         function onDragStart(event) {
-            for (var i = steps.length - 1; i >= 0; i--) {
-                var stepRectangle = getStepRectangle(steps[i])
+            var moving = false
+            for (var i = selectedSteps.length - 1; i >= 0; i--) {
+                var stepRectangle = getStepRectangle(selectedSteps[i])
                 if (event.x0 >= stepRectangle.x1 && event.x0 <= stepRectangle.x2 &&
                     event.y0 >= stepRectangle.y1 && event.y0 <= stepRectangle.y2) {
-                        movingElement = {
-                            element: steps[i],
-                            mouseElementOffsetX: event.x0 - stepRectangle.x1,
-                            mouseElementOffsetY: event.y0 - stepRectangle.y1,
-                        }
+                        moving = true
                         break
                     }
+            }
+            
+            if (moving) {
+                for (var i = 0; i < selectedSteps.length; i++) {
+                    var stepRectangle = getStepRectangle(selectedSteps[i])
+                    movingElements.push({
+                        element: selectedSteps[i],
+                        mouseElementOffsetX: event.x0 - stepRectangle.x1,
+                        mouseElementOffsetY: event.y0 - stepRectangle.y1,
+                    })
+                }
             }
         }
     
         function onDragEnd(event) {
-            if (movingElement)
+            if (movingElements)
                 saveProjectIntoLocalStorage()
-            movingElement = undefined
+            movingElements.length = 0
         }
     
         function newStep(x, y) {
@@ -232,31 +254,38 @@ Templates = {}
         }
     
         function removeSelectedStep() {
-            if (selectedStep == null)
+            if (selectedSteps.length == 0)
                 return
             
             for (var i = 0; i < steps.length; i++) {
                 var step = steps[i]
                 for (var j = 0; j < step.paragraphs.length; j++) {
                     var paragraph = step.paragraphs[j]
-                    if (paragraph.type === 'path' && paragraph.toStep === selectedStep.name) {
-                        paragraph.toStep = null
+                    for (var k = 0; k < selectedSteps.length; k++) {
+                        var selectedStep = selectedSteps[k]
+                        if (paragraph.type === 'path' && paragraph.toStep === selectedStep.name) {
+                            paragraph.toStep = null
+                        }
                     }
                 }
             }
     
-            for (var indexOfStep = 0; indexOfStep < steps.length; indexOfStep++) {
-                var step = steps[indexOfStep]
-                if (step.name === selectedStep.name)
-                    break
-            }
-    
-            if (indexOfStep !== steps.length) {
-                steps.splice(indexOfStep, 1)
-            }
-    
-            if (selectedStep.name === settings.startingStep) {
-                settings.startingStep = null
+            for (var i = 0; i < selectedSteps.length; i++) {
+                var selectedStep = selectedSteps[i]
+
+                for (var indexOfStep = 0; indexOfStep < steps.length; indexOfStep++) {
+                    var step = steps[indexOfStep]
+                    if (step.name === selectedStep.name)
+                        break
+                }
+
+                if (indexOfStep !== steps.length) {
+                    steps.splice(indexOfStep, 1)
+                }
+
+                if (selectedStep.name === settings.startingStep) {
+                    settings.startingStep = null
+                }
             }
             
             selectStep(null)
@@ -268,27 +297,50 @@ Templates = {}
                 var stepRectangle = getStepRectangle(steps[i])
                 if (event.x >= stepRectangle.x1 && event.x <= stepRectangle.x2 &&
                     event.y >= stepRectangle.y1 && event.y <= stepRectangle.y2) {
-                        selectStep(steps[i])
+                        selectStep(steps[i], isShiftKeyPressed)
                         break
                     }
             }
             if (i < 0) {
-                selectStep(null)
+                selectStep(null, isShiftKeyPressed)
             }
         }
+
+        function selectSteps(steps) {
+            selectedSteps.length = 0
+            for (var i = 0; i < steps.length; i++) {
+                selectedSteps.push(steps[i])
+            }
+            updateLateralMenu()
+            redraw()
+        }
     
-        function selectStep(step) {
-            selectedStep = step
+        function selectStep(step, invert) {
+            if (!invert) {
+                selectedSteps.length = 0
+            }
+            
+            var indexOfStep = selectedSteps.indexOf(step)
+            if (!invert || indexOfStep === -1) {
+                if (step != null) {
+                    selectedSteps.push(step)
+                }
+            } else if (indexOfStep !== -1) {
+                selectedSteps.slice(indexOfStep, 1)
+            }
+            
             updateLateralMenu()
             redraw()
         }
     
         function updateLateralMenu() {
             lateralMenu.empty()
-            if (selectedStep == null) {
+            if (selectedSteps.length != 1) {
                 lateralMenu.hide(100)
                 return
             }
+
+            var selectedStep = selectedSteps[0]
             
             function createTextInput(labelText, inputPlaceholder, initialValue) {
                 var container = $('<div class="input-field"></div>')
@@ -663,7 +715,7 @@ Templates = {}
                 if (step.name === settings.startingStep) {
                     context.strokeStyle = '#43b581'
                 }
-                if (step == selectedStep) {
+                if (selectedSteps.indexOf(step) !== -1) {
                     context.strokeStyle = '#b9bbbe'
                 }
                 context.beginPath()
