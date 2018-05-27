@@ -805,8 +805,10 @@ Templates = {}
                 var stepToAdd = new Step(step.name, step.x, step.y, step.paragraphs, step.onDisplay)
                 steps.push(stepToAdd)
             }
-    
+            
             selectStep(null)
+            
+            saveProjectIntoLocalStorage()
         }
     
         this.exportProject = exportProject
