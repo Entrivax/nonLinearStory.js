@@ -7,7 +7,7 @@ gulp.task('watch', function() {
 })
 
 gulp.task('build', function() {
-    gulp.src('src/**/*.ejs')
+    gulp.src(['src/templates/**/*', '../non-linear-story.js'])
         .pipe(arrayify())
         .pipe(createVariableFromTemplate())
         .pipe(addsrc.prepend('src/**/*.js'))

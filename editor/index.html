@@ -4,7 +4,8 @@
         <title>NLS Editor</title>
         <script src="./node_modules/interactjs/dist/interact.js"></script>
         <script src="./node_modules/underscore/underscore.js"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="./node_modules/jszip/dist/jszip.min.js"></script>
+        <script src="./node_modules/jquery/dist/jquery.min.js"></script>
         <script src="./jquery-ui/jquery-ui.js"></script>
         <script src="./jquery-custom-select/dist/js/jquery.custom-select.js"></script>
         <script src="./build/script.js"></script>
@@ -19,7 +20,14 @@
                 var nlsEditor = new NLSEditor()
 
                 $('#compile-project').click(function() {
-                    saveFile(new Blob([ nlsEditor.createJs() ], { type: 'application/javascript' }), 'story.js')
+                    var zip = new JSZip()
+                    zip.file('index.html', Templates['generatedOutput.ejs'])
+                    var jsdir = zip.folder('js')
+                    jsdir.file('story.js', nlsEditor.createJs())
+                    jsdir.file('non-linear-story.js', Templates['non-linear-story.js'])
+                    zip.generateAsync({type: 'blob'}).then(function (blob) {
+                        saveFile(blob, 'build.zip')
+                    })
                 })
 
                 $('#save-project').click(function() {
