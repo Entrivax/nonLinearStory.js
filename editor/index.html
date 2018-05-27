@@ -34,21 +34,11 @@
                     var preview = window.open()
                     var doc = preview.document
                     var htmlTemplate = _.template(Templates['previewOutput.ejs'])
-                    var html = htmlTemplate()
+                    var html = htmlTemplate({
+                        nlsScript: Templates['non-linear-story.js'],
+                        storyScript: nlsEditor.createJs(true),
+                    })
                     doc.write(html)
-                    var jQueryScript = doc.createElement('script')
-                    jQueryScript.type = 'text/javascript'
-                    jQueryScript.async = true
-                    jQueryScript.onload = function() {
-                        var nlsScript = doc.createElement('script')
-                        nlsScript.innerHTML = Templates['non-linear-story.js']
-                        doc.head.appendChild(nlsScript)
-                        var storyScript = doc.createElement('script')
-                        storyScript.innerHTML = nlsEditor.createJs(true)
-                        doc.head.appendChild(storyScript)
-                    }
-                    jQueryScript.src = 'https://code.jquery.com/jquery-1.12.4.min.js'
-                    doc.head.appendChild(jQueryScript)
                 })
 
                 $('#save-project').click(function() {
