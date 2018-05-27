@@ -21,6 +21,25 @@
                 $('#compile-project').click(function() {
                     saveFile(new Blob([ nlsEditor.createJs() ], { type: 'application/javascript' }), 'story.js')
                 })
+
+                $('#save-project').click(function() {
+                    saveFile(new Blob([ JSON.stringify(nlsEditor.exportProject()) ], { type: 'application/json' }), 'project.json')
+                })
+                
+                var fileInput = $('<input type="file" accept=".json">')
+                $('#open-project').click(function() {
+                    fileInput.change(function(event) {
+                        var reader = new FileReader()
+
+                        reader.onload = function(e) {
+                            nlsEditor.loadProject(JSON.parse(reader.result))
+                        }
+
+                        reader.readAsText(this.files[0])
+                        fileInput = $('<input type="file" accept=".json">')
+                    })
+                    fileInput.click()
+                })
             })
 
             function saveFile(blob, filename) {
