@@ -140,7 +140,7 @@
                         }
 
                         if (typeof e === 'string') {
-                            var elemToAdd = $('<p></p>');
+                            var elemToAdd = $('<div class="paragraph"></div>');
                             elemToAdd.html(e);
 
                             ;(function(elemToAdd) {
@@ -166,7 +166,7 @@
                                 if (typeof htmlText === 'function')
                                     htmlText = htmlText(_self);
 
-                                var elemToAdd = $('<p></p>');
+                                var elemToAdd = $('<div class="paragraph"></div>');
                                 elemToAdd.html(htmlText);
 
                                 if (e instanceof NLSAction) {
