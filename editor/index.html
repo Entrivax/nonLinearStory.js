@@ -30,6 +30,27 @@
                     })
                 })
 
+                $('#preview-project').click(function() {
+                    var preview = window.open()
+                    var doc = preview.document
+                    var htmlTemplate = _.template(Templates['previewOutput.ejs'])
+                    var html = htmlTemplate()
+                    doc.write(html)
+                    var jQueryScript = doc.createElement('script')
+                    jQueryScript.type = 'text/javascript'
+                    jQueryScript.async = true
+                    jQueryScript.onload = function() {
+                        var nlsScript = doc.createElement('script')
+                        nlsScript.innerHTML = Templates['non-linear-story.js']
+                        doc.head.appendChild(nlsScript)
+                        var storyScript = doc.createElement('script')
+                        storyScript.innerHTML = nlsEditor.createJs(true)
+                        doc.head.appendChild(storyScript)
+                    }
+                    jQueryScript.src = 'https://code.jquery.com/jquery-1.12.4.min.js'
+                    doc.head.appendChild(jQueryScript)
+                })
+
                 $('#save-project').click(function() {
                     saveFile(new Blob([ JSON.stringify(nlsEditor.exportProject()) ], { type: 'application/json' }), 'project.json')
                 })
@@ -76,6 +97,7 @@
             <span id="open-project" title="Open project..."><i class="fas fa-folder-open fa-lg"></i></span>
             <span id="save-project" title="Save project..."><i class="fas fa-save fa-lg"></i></span>
             <span id="compile-project" title="Compile project..."><i class="fas fa-arrow-alt-circle-down fa-lg"></i></span>
+            <span id="preview-project" title="Launch preview"><i class="fas fa-play-circle fa-lg"></i></span>
         </div>
         <div id="lateral-menu"></div>
         <ul class="grid-context-menu">
