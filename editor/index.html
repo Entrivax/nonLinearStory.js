@@ -21,7 +21,11 @@
 
                 $('#compile-project').click(function() {
                     var zip = new JSZip()
-                    zip.file('index.html', Templates['generatedOutput.ejs'])
+                    var htmlTemplate = _.template(Templates['generatedOutput.ejs'])
+                    var html = htmlTemplate({
+                        project: nlsEditor.exportProject()
+                    })
+                    zip.file('index.html', html)
                     var jsdir = zip.folder('js')
                     jsdir.file('story.js', nlsEditor.createJs())
                     jsdir.file('non-linear-story.js', Templates['non-linear-story.js'])
@@ -37,6 +41,7 @@
                     var html = htmlTemplate({
                         nlsScript: Templates['non-linear-story.js'],
                         storyScript: nlsEditor.createJs(true),
+                        project: nlsEditor.exportProject()
                     })
                     doc.write(html)
                 })

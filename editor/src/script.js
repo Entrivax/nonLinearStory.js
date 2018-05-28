@@ -157,14 +157,26 @@ var Templates = {}
             }
             select.val(settings.startingStep)
             select.customSelect('refresh')
+
+            var input = settingsModal.find('#project-name')
+            input.val(settings.projectName)
         }
     
         function initSettingsModal() {
             settingsModal = $('<div></div>')
+
             var row = $('<div class="row"></div>')
-            $('<div class="col-xs-12">Starting step:</div>').appendTo(row)
+            $('<div class="col-xs-12">Project name:</div>').appendTo(row)
             var inputContainer = $('<div class="col-xs-12"></div>')
-            var input = $('<select id="starting-step"></select>')
+            var input = $('<input type="text" id="project-name" placeholder="Enter a project name">')
+            input.appendTo(inputContainer)
+            inputContainer.appendTo(row)
+            row.appendTo(settingsModal)
+
+            row = $('<div class="row"></div>')
+            $('<div class="col-xs-12">Starting step:</div>').appendTo(row)
+            inputContainer = $('<div class="col-xs-12"></div>')
+            input = $('<select id="starting-step"></select>')
             input.appendTo(inputContainer)
             input.customSelect({
                 placeholder: '<span>Please select a step</span>'
@@ -182,6 +194,7 @@ var Templates = {}
             saveButton.appendTo(buttonsContainer)
             saveButton.click(function() {
                 settingsModal.dialog('close')
+                settings.projectName = settingsModal.find('#project-name').val()
                 settings.startingStep = settingsModal.find('#starting-step').val()
                 saveProjectIntoLocalStorage()
                 redraw()
@@ -838,7 +851,7 @@ var Templates = {}
         this.loadProject = loadProject
     
         function loadProject(project) {
-            settings = new Settings(project.settings.startingStep)
+            settings = new Settings(project.settings.projectName, project.settings.startingStep)
             steps.length = 0
             for (var i = 0; i < project.steps.length; i++) {
                 var step = project.steps[i]
@@ -891,7 +904,8 @@ var Templates = {}
             localStorage.setItem('currentProject', JSON.stringify(exportProject()))
         }
     
-        function Settings(startingStep) {
+        function Settings(projectName, startingStep) {
+            this.projectName = projectName
             this.startingStep = startingStep
         }
     
