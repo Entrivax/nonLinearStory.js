@@ -1,7 +1,20 @@
-Templates = {}
+var Templates = {}
 
 ;(function(interact, $, window){
     'use strict';
+
+    Array.prototype.aggregate = function(select, aggregate) {
+        if (this.length === 0)
+            return null
+
+        var output = select(this[0])
+
+        for (var i = 1; i < this.length; i++) {
+            output = aggregate(output, select(this[i]))
+        }
+
+        return output
+    }
 
     window.NLSEditor = function() {
         var canvas,
@@ -19,7 +32,8 @@ Templates = {}
             settings = new Settings(),
             settingsModal,
             selectorInfo,
-            isShiftKeyPressed = false
+            isShiftKeyPressed = false,
+            showDebugInfo = false
     
         $(function() {
             lateralMenu = $('#lateral-menu')
@@ -41,6 +55,7 @@ Templates = {}
                 .on('tap', onClick)
                 .on('keyup', onKeyUp)
                 .on('keydown', onKeyDown)
+                .on('keypress', onKeyPress)
                 .styleCursor(false)
     
     
@@ -118,6 +133,13 @@ Templates = {}
         function onKeyDown(event) {
             if (event.keyCode === 16) {
                 isShiftKeyPressed = true
+            }
+        }
+
+        function onKeyPress(event) {
+            if (event.keyCode === 68) { // D uppercase
+                showDebugInfo = !showDebugInfo
+                redraw()
             }
         }
     
@@ -621,6 +643,7 @@ Templates = {}
             drawGrid()
             drawSteps()
             drawLinks()
+            drawDebug()
         }
     
         function drawGrid() {
@@ -793,6 +816,23 @@ Templates = {}
             if (intersection == null)
                 intersection = segInter(p1,p2,r4,r1);
             return intersection;
+        }
+
+        function drawDebug() {
+            if (!showDebugInfo)
+                return
+            
+            var fontSize = 11
+            context.font = fontSize + 'px Helvetica'
+            context.fillStyle = '#b9bbbe'
+            var text = 'x: ' + offsetX + '\n' +
+                        'y: ' + offsetY + '\n' +
+                        'selected steps: [' + (selectedSteps.length > 0 ? selectedSteps.aggregate(e => e.name, (e1, e2) => e1 + ', ' + e2) : '') + ']'
+            var lines = text.split('\n')
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i])
+                    context.fillText(lines[i], 10, 10 + (i + 1) * fontSize)
+            }
         }
         
         this.loadProject = loadProject
