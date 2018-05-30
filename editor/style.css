@@ -184,6 +184,8 @@ input:focus {
     border-color: rgba(0, 0, 0, 0.3);
     color: #f6f6f6;
     transition: all 0.2s;
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .input-field.sortable .path-params > *:not(:last-child) {
