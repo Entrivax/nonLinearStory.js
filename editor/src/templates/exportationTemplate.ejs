@@ -1,7 +1,5 @@
 ;(function($) {
-    <% if (!loadWithoutReady) { %>
     $(document).ready(function() {
-    <% } %>
         var story = new NLSStory([
         <% _(steps).each(function(step) { %>
             new NLSStep('<%= escapeString(step.name) %>', [
@@ -64,7 +62,5 @@
         });
 
         nls.start();
-    <% if (!loadWithoutReady) { %>
     })
-    <% } %>
 })(jQuery);

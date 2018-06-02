@@ -743,13 +743,12 @@ var Templates = {}
     
         this.createJs = createJs
         
-        function createJs(loadWithoutReady) {
+        function createJs() {
             var compiledTemplate = _.template(Templates['exportationTemplate.ejs'])
             var project = exportProject()
             project.escapeString = function(str) {
                 return str.replace(/\'/g, '\\\'').replace(/(?:\r\n|\r|\n)/g, '<br>')
             }
-            project.loadWithoutReady = loadWithoutReady
             return compiledTemplate(project)
         }
     

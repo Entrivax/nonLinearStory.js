@@ -38,7 +38,7 @@
                     var htmlTemplate = _.template(Templates['previewOutput.ejs'])
                     var html = htmlTemplate({
                         nlsScript: Templates['non-linear-story.js'],
-                        storyScript: nlsEditor.createJs(true),
+                        storyScript: nlsEditor.createJs(),
                         project: nlsEditor.exportProject()
                     })
                     var htmlBlob = new Blob([ html ], { type: 'text/html' })
