@@ -747,7 +747,7 @@ var Templates = {}
             var compiledTemplate = _.template(Templates['exportationTemplate.ejs'])
             var project = exportProject()
             project.escapeString = function(str) {
-                return str.replace(/\'/g, '\\\'').replace(/(?:\r\n|\r|\n)/g, '<br>')
+                return str ? str.replace(/\'/g, '\\\'').replace(/(?:\r\n|\r|\n)/g, '<br>') : ''
             }
             return compiledTemplate(project)
         }
