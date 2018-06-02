@@ -35,15 +35,26 @@
                 })
 
                 $('#preview-project').click(function() {
-                    var preview = window.open()
-                    var doc = preview.document
                     var htmlTemplate = _.template(Templates['previewOutput.ejs'])
                     var html = htmlTemplate({
                         nlsScript: Templates['non-linear-story.js'],
                         storyScript: nlsEditor.createJs(true),
                         project: nlsEditor.exportProject()
                     })
-                    doc.write(html)
+                    var htmlBlob = new Blob([ html ], { type: 'text/html' })
+                    var url = URL.createObjectURL(htmlBlob)
+                    var preview = window.open(url)
+                    var openDate = new Date()
+                    var timer = setInterval(function() { 
+                        if (preview.closed) {
+                            var closeDate = new Date()
+                            if (closeDate.getTime() - openDate.getTime() < 800) {
+                                alert('You seems to have an adblocker which is blocking the preview window. If you want to use this feature, please disable it.')
+                            }
+                            clearInterval(timer)
+                            URL.revokeObjectURL(url)
+                        }
+                    }, 500)
                 })
 
                 $('#save-project').click(function() {
