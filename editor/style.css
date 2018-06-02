@@ -188,6 +188,16 @@ input:focus {
     overflow-y: auto;
 }
 
+.ui-dialog-content .custom-select .custom-select__option,
+.ui-dialog-content .custom-select .custom-select__dropdown {
+    background-color: #303338;
+}
+
+.ui-dialog-content .custom-select .custom-select__option:hover,
+.ui-dialog-content .custom-select--active .custom-select__option--value:hover, .custom-select--active .custom-select__option--value:focus {
+    background-color: #393B40;
+}
+
 .input-field.sortable .path-params > *:not(:last-child) {
     margin-bottom: 10px;
 }
@@ -249,7 +259,7 @@ textarea:focus {
 }
 
 .expander:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .expander i {
