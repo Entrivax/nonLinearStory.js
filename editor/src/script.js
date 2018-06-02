@@ -376,247 +376,121 @@ var Templates = {}
             }
 
             var selectedStep = selectedSteps[0]
-            
-            function createTextInput(labelText, inputPlaceholder, initialValue) {
-                var container = $('<div class="input-field"></div>')
-                var label = $('<label></label>')
-                label.text(labelText)
-                label.appendTo(container)
-                var input = $('<input type="text">')
-                input.attr('placeholder', inputPlaceholder)
-                input.appendTo(container)
-                input.change(updateStepInfos)
-                input.val(initialValue)
-                return container
-            }
-    
-            function createParagraphsContainer(labelText) {
-                var container = $('<div class="input-field sortable"></div>')
-                var label = $('<label></label>')
-                label.text(labelText)
-                label.appendTo(container)
-                var sortable = $('<ul></ul>')
-                sortable.sortable({
-                    placeholder: 'sortable-placeholder',
-                    update: updateStepInfos
-                })
-                sortable.appendTo(container)
-                var button = $('<button class="add-button"><i class="fas fa-plus"></i></button>')
-                button.appendTo(container)
-                return container
-            }
-    
-            function createExtraContainer(onDisplayLabel, onDisplay, onDisplayPlaceholder) {
-                var extraContent = $('<div class="expansion"></div>')
-                extraContent.hide()
-        
-                var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                expander.click(function() {
-                    var $this = $(this)
-                    if ($this.hasClass('close')) {
-                        extraContent.slideUp(300)
-                        $this.removeClass('close')
-                    } else {
-                        extraContent.slideDown(300)
-                        $this.addClass('close')
-                    }
-                })
-    
-                var container = $('<div class="additionnal-params"></div>')
-                var label = $('<div class="sub-title"></div>')
-                label.text(onDisplayLabel)
-                label.appendTo(container)
-                var input = $('<textarea class="onDisplay"></textarea>')
-                input.attr('placeholder', onDisplayPlaceholder)
-                input.appendTo(container)
-                input.change(updateStepInfos)
-                input.val(onDisplay)
-    
-                container.appendTo(extraContent)
-    
-                return [expander, extraContent]
-            }
-    
-            var nameInput = createTextInput('Step name:', 'The name of the step', selectedStep.name)
-    
-            var paragraphs = createParagraphsContainer('Paragraphs:')
-            paragraphs.find('ul').on('change', updateStepInfos)
-            paragraphs.find('button').click(function(event) {
+
+            var panelTemplate = _.template(Templates['panel.ejs'])
+            var textParagraphTemplate = _.template(Templates['textParagraph.ejs'])
+            var pathParagraphTemplate = _.template(Templates['pathParagraph.ejs'])
+
+            var generatedPanel = panelTemplate({
+                step: selectedStep,
+                steps: steps,
+                textParagraphTemplate: textParagraphTemplate,
+                pathParagraphTemplate: pathParagraphTemplate,
+            })
+
+            $(generatedPanel).appendTo(lateralMenu)
+
+            lateralMenu.find('.add-button').click(function(event) {
                 showContextMenu('lateral-menu-context-menu', event.pageX, event.pageY, [
                     {
                         text: 'New text element',
                         onClick: function() {
-                            createTextParagraph(null)
-                            updateStepInfos()
+                            createTextParagraph()
+                            updateLateralMenu()
                         }
                     },
                     {
                         text: 'New path',
                         onClick: function() {
-                            createPathParagraph(null)
-                            updateStepInfos()
+                            createPathParagraph()
+                            updateLateralMenu()
                         }
                     }
                 ])
             })
-    
-            var extraContainer = createExtraContainer('On display:', selectedStep.onDisplay, 'Javascript code here...')
-    
-            function createTextParagraph(paragraph) {
-                var container = $('<li class="text-element"><i class="fas fa-sort"></i> <span>Text:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
-                container.find('.remove-button').click(function() {
-                    container.remove()
-                    updateStepInfos()
-                })
-    
-                var paramsContainer = container.find('.path-params')
-                        
-                var label = $('<div class="sub-title"></div>')
-                label.text('Text:')
-                label.appendTo(paramsContainer)
-                
-                var textarea = $('<textarea class="textTextArea"></textarea>')
-                textarea.change(updateStepInfos)
-                textarea.val(paragraph ? paragraph.text : '')
-                textarea.appendTo(paramsContainer)
-    
-                var checkbox = $('<input type="checkbox" class="is-text-js">')
-                checkbox.change(updateStepInfos)
-                checkbox.prop('checked', paragraph ? paragraph.isTextJavascript : false)
-                checkbox.appendTo(paramsContainer)
-                label = $('<span></span>')
-                label.text('Is text JavaScript')
-                label.appendTo(paramsContainer)
-    
-                var extraContent = $('<div class="expansion"></div>')
-                extraContent.hide()
-    
-                var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                expander.click(function() {
-                    var $this = $(this)
+
+            lateralMenu.find('.expander').click(function() {
+                var $this = $(this)
+                $this.parent().children('.expansion[data-expander-container="' + $this.attr('data-expander-container') + '"]').each(function() {
+                    var expansion = $(this)
                     if ($this.hasClass('close')) {
-                        extraContent.slideUp(300)
+                        expansion.slideUp(300)
                         $this.removeClass('close')
                     } else {
-                        extraContent.slideDown(300)
+                        expansion.slideDown(300)
                         $this.addClass('close')
                     }
                 })
-    
-                label = $('<div class="sub-title"></div>')
-                label.text('Is visible:')
-                label.appendTo(extraContent)
-                var input = $('<textarea class="isVisible"></textarea>')
-                input.attr('placeholder', 'Javascript code here... (must return boolean)')
-                input.appendTo(extraContent)
-                input.val(paragraph ? paragraph.isVisible : '')
-                input.change(updateStepInfos)
-    
-                expander.appendTo(paramsContainer)
-                extraContent.appendTo(paramsContainer)
-    
-                paramsContainer.appendTo(container)
-    
-                container.appendTo(paragraphs.find('ul'))
-            }
-    
-            function createPathParagraph(paragraph) {
-                var container = $('<li class="path-element"><i class="fas fa-sort"></i> <span>Path:</span> <span class="remove-button"><i class="fas fa-times"></i></span><div class="path-params"></div></li>')
-                container.find('.remove-button').click(function() {
-                    container.remove()
-                    updateStepInfos()
-                })
-    
-                var select = $('<select></select>')
-    
-                for (var j = 0; j < steps.length; j++) {
-                    var option = $('<option></option>')
-                    option.text(steps[j].name)
-                    option.val(steps[j].name)
-                    if (paragraph && steps[j].name === paragraph.toStep) {
-                        option.attr('selected', 'selected')
+            })
+
+            lateralMenu.find('.expansion').hide(0)
+
+            var paragraphs = lateralMenu.find('ul.paragraphs > li')
+
+            for (var i = 0; i < paragraphs.length; i++) {
+                var $paragraph = $(paragraphs[i])
+                ;(function(i) {
+                    $paragraph.find('.remove-button').click(function() {
+                        selectedStep.paragraphs.splice(i, 1)
+                        updateLateralMenu()
+                    })
+                })(i)
+                var stepParagraph = selectedStep.paragraphs[i]
+                if (stepParagraph.type === 'text') {
+                    $paragraph.find('.is-text-js').prop('checked', stepParagraph.isTextJavascript)
+                    $paragraph.find('.textTextArea').val(stepParagraph.text)
+                    $paragraph.find('.isVisible').val(stepParagraph.isVisible)
+                } else if (stepParagraph.type === 'path') {
+                    $paragraph.find('.is-text-js').prop('checked', stepParagraph.isTextJavascript)
+                    $paragraph.find('.textTextArea').val(stepParagraph.text)
+                    $paragraph.find('.isVisible').val(stepParagraph.isVisible)
+                    $paragraph.find('.onClick').val(stepParagraph.onClick)
+                    if (stepParagraph.toStep) {
+                        $paragraph.find('option[value="' + stepParagraph.toStep.replace(/\"/g) + '"]', '\\"').attr('selected', 'selected')
                     }
-                    option.appendTo(select)
+                    $paragraph.find('.to-step').customSelect({
+                        placeholder: '<span>Please select a step</span>'
+                    })
                 }
-    
-                select.change(updateStepInfos)
-                
-                var paramsContainer = container.find('.path-params')
-    
-                var textArea = $('<textarea class="textTextArea"></textarea>')
-                textArea.val(paragraph ? paragraph.text : '')
-                textArea.change(updateStepInfos)
-    
-                $('<div class="sub-title">Target step:</div>').appendTo(paramsContainer)
-                select.appendTo(paramsContainer)
-                $('<div class="sub-title">Text:</div>').appendTo(paramsContainer)
-                textArea.appendTo(paramsContainer)
-    
-                var checkbox = $('<input type="checkbox" class="is-text-js">')
-                checkbox.change(updateStepInfos)
-                checkbox.prop('checked', paragraph ? paragraph.isTextJavascript : false)
-                checkbox.appendTo(paramsContainer)
-                var label = $('<span></span>')
-                label.text('Is text JavaScript')
-                label.appendTo(paramsContainer)
-    
-                var extraContent2 = $('<div class="expansion"></div>')
-                extraContent2.hide()
-    
-                var expander = $('<div class="expander"><i class="fas fa-angle-down"></i></div>')
-                expander.click(function() {
-                    var $this = $(this)
-                    if ($this.hasClass('close')) {
-                        extraContent2.slideUp(300)
-                        $this.removeClass('close')
-                    } else {
-                        extraContent2.slideDown(300)
-                        $this.addClass('close')
-                    }
-                })
-    
-                $('<div class="sub-title">On click:</div>').appendTo(extraContent2)
-                var onClickTextArea = $('<textarea class="onclick"></textarea>')
-                onClickTextArea.attr('placeholder', 'Javascript code here...')
-                onClickTextArea.val(paragraph ? paragraph.onClick : '')
-                onClickTextArea.change(updateStepInfos)
-                onClickTextArea.appendTo(extraContent2)
-                        
-                label = $('<div class="sub-title"></div>')
-                label.text('Is visible:')
-                label.appendTo(extraContent2)
-                var input = $('<textarea class="isVisible"></textarea>')
-                input.attr('placeholder', 'Javascript code here... (must return boolean)')
-                input.appendTo(extraContent2)
-                input.change(updateStepInfos)
-                input.val(paragraph ? paragraph.isVisible : '')
-    
-                expander.appendTo(paramsContainer)
-                extraContent2.appendTo(paramsContainer)
-    
-                container.appendTo(paragraphs.find('ul'))
-                select.customSelect({
-                    placeholder: '<span>Please select a step</span>'
+            }
+
+            lateralMenu.find('.step-name').val(selectedStep.name)
+            lateralMenu.find('.onDisplay').val(selectedStep.onDisplay)
+
+            lateralMenu.find('ul').sortable({
+                placeholder: 'sortable-placeholder',
+                update: updateStepInfos
+            })
+
+            lateralMenu.find('input, select, textarea').change(updateStepInfos)
+
+            function createTextParagraph() {
+                selectedStep.paragraphs.push({
+                    type: 'text',
+                    text: '',
+                    isVisible: '',
+                    isTextJavascript: '',
                 })
             }
-    
-            for (var i = 0; i < selectedStep.paragraphs.length; i++) {
-                var paragraph = selectedStep.paragraphs[i]
-                if (paragraph.type === 'text') {
-                    createTextParagraph(paragraph)
-                } else if (paragraph.type === 'path') {
-                    createPathParagraph(paragraph)
-                }
+
+            function createPathParagraph() {
+                selectedStep.paragraphs.push({
+                    type: 'path',
+                    toStep: null,
+                    text: '',
+                    onClick: '',
+                    isVisible: '',
+                    isTextJavascript: '',
+                })
             }
             
             function updateStepInfos() {
-                selectedStep.name = nameInput.find('input').val()
-                nameInput.find('input').val(selectedStep.name)
+                selectedStep.name = lateralMenu.find('.step-name').val()
+                lateralMenu.find('.step-name').val(selectedStep.name)
     
-                var elements = paragraphs.find('li.text-element, li.path-element')
                 selectedStep.paragraphs.length = 0
-                for (var i = 0; i < elements.length; i++) {
-                    var $element = $(elements[i])
+                for (var i = 0; i < paragraphs.length; i++) {
+                    var $element = $(paragraphs[i])
                     if ($element.hasClass('text-element')) {
                         selectedStep.paragraphs.push({
                             type: 'text',
@@ -630,25 +504,19 @@ var Templates = {}
                             type: 'path',
                             toStep: targetStepName,
                             text: $element.find('.textTextArea').val(),
-                            onClick: $element.find('.onclick').val(),
+                            onClick: $element.find('.onClick').val(),
                             isVisible: $element.find('textarea.isVisible').val(),
                             isTextJavascript: $element.find('input.is-text-js').prop('checked'),
                         })
                     }
                 }
     
-                selectedStep.onDisplay = extraContainer[1].find('.onDisplay').val()
-                selectedStep.isVisible = extraContainer[1].find('.isVisible').val()
+                selectedStep.onDisplay = lateralMenu.find('.onDisplay').val()
     
                 saveProjectIntoLocalStorage()
-    
                 redraw()
             }
     
-            nameInput.appendTo(lateralMenu)
-            paragraphs.appendTo(lateralMenu)
-            extraContainer[0].appendTo(lateralMenu)
-            extraContainer[1].appendTo(lateralMenu)
             lateralMenu.show(100)
         }
     

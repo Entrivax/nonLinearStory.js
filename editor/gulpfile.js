@@ -21,8 +21,10 @@ var PluginError = gutil.PluginError
 
 function arrayify() {
     var stream = through.obj(function(file, enc, cb) {
-        var lines = '    \'' + file.contents.toString().replace(/\'/g, '\\\'').split(/\r\n|\n/g).join('\',\n    \'') + '\''
-        file.contents = Buffer.concat([ new Buffer(lines) ])
+        if (file.contents) {
+            var lines = '    \'' + file.contents.toString().replace(/\'/g, '\\\'').split(/\r\n|\n/g).join('\',\n    \'') + '\''
+            file.contents = Buffer.concat([ new Buffer(lines) ])
+        }
         this.push(file)
         cb()
     })
@@ -33,11 +35,13 @@ function arrayify() {
 function createVariableFromTemplate() {
 
     var stream = through.obj(function(file, enc, cb) {
-        var fileName = file.path.split(/\/|\\/g)
-        fileName = fileName[fileName.length - 1]
-        fileName = fileName.replace(/\'/g, '\\\'')
-        var prefix = 'Templates[\'' + fileName + '\'] = [\n'
-        file.contents = Buffer.concat([ new Buffer(prefix), file.contents, new Buffer('\n].join(\'\\n\').replace(/(?:\\s*)(\\<%(?!=).*)/g, \'$1\');') ])
+        if (file.contents) {
+            var fileName = file.path.split(/\/|\\/g)
+            fileName = fileName[fileName.length - 1]
+            fileName = fileName.replace(/\'/g, '\\\'')
+            var prefix = 'Templates[\'' + fileName + '\'] = [\n'
+            file.contents = Buffer.concat([ new Buffer(prefix), file.contents, new Buffer('\n].join(\'\\n\').replace(/(?:\\s*)(\\<%(?!=).*)/g, \'$1\');') ])
+        }
         this.push(file)
         cb()
     })
