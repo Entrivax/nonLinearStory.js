@@ -459,6 +459,7 @@ var Templates = {}
 
             lateralMenu.find('ul').sortable({
                 placeholder: 'sortable-placeholder',
+                handle: '.sort-handle',
                 update: updateStepInfos
             })
 
