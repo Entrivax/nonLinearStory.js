@@ -360,8 +360,8 @@ var Templates = {}
                 if (step != null) {
                     selectedSteps.push(step)
                 }
-            } else if (indexOfStep !== -1) {
-                selectedSteps.slice(indexOfStep, 1)
+            } else if (invert && indexOfStep !== -1) {
+                selectedSteps.splice(indexOfStep, 1)
             }
             
             updateLateralMenu()
