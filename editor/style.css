@@ -54,6 +54,11 @@ body {
 
 .sidebar .add-button {
     margin-bottom: 10px;
+    transition: all 0.2s;
+}
+
+.sidebar .add-button:hover {
+    background-color: #4d545c;
 }
 
 /****************************/
@@ -85,6 +90,8 @@ body {
 /****************************/
 #grid {
     position: absolute;
+    -ms-touch-action: none;
+    touch-action: none;
 }
 
 /****************************/
@@ -114,6 +121,11 @@ body {
     text-align: center;
     background-color: #495057;
     border: 1px solid #25292c;
+    transition: all 0.2s;
+}
+
+.expander:hover {
+    background-color: #4d545c;
 }
 
 .expander.collapsed i {
