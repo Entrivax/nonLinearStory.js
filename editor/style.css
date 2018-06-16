@@ -35,12 +35,16 @@ body {
     position: absolute;
     top: 0;
     right: 0;
-    width: 260px;
-    background-color: #2f3237;
+    width: 340px;
+    max-width: calc(100% - 40px);
+    background-color: #2e3137;
     color: #fff;
     padding: 10px;
     max-height: calc(100% - 20px);
     overflow-y: auto;
+    border: 1px solid #131416;
+    border-right-width: 0px;
+    border-top-width: 0px;
 }
 
 .sidebar ul {
@@ -74,8 +78,8 @@ body {
 
 .paragraphs .sortable-item .remove-button {
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 10px;
+    top: 10px;
     cursor: pointer;
 }
 
@@ -83,6 +87,9 @@ body {
     margin-bottom: 10px;
     margin-left: 10px;
     margin-right: 10px;
+    padding: 10px;
+    background-color: #282a2e;
+    border: 1px solid #1a1b1e;
 }
 
 /****************************/
