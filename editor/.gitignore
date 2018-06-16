@@ -1,75 +1,26 @@
-#---------------------------------------#
-# Project Ignores                       #
-#---------------------------------------#
+# You may want to customise this file depending on your Operating System
+# and the editor that you use.
+#
+# We recommend that you use a Global Gitignore for files that are not related
+# to the project. (https://help.github.com/articles/ignoring-files/#create-a-global-gitignore)
 
-# output
-/.temp
-/.tmp
-/build
-/dist
-
-# dependencies
-/node_modules
-.package.swp
-
-# linters
-.eslintcache/
-.eslintrc
-.eslintrc.yaml
-.eslintrc.json
-.eslintrc.js
-.stylelintcache/
-.stylelintrc
-.stylelintrc.yaml
-.stylelintrc.json
-.stylelintrc.js
-
-# misc
-/connect.lock
-/coverage/*
-/report_*
-/reports/
-.sass-cache/
-*.log
-
-
-#---------------------------------------#
-# IDEs & Editors Ignores                #
-#---------------------------------------#
-
-# Sublime Text
-/*.sublime*
-.sublime-gulp.cache
-
-# JetBrains IDEs
-/.idea
-
-
-#---------------------------------------#
-# General Ignores                       #
-#---------------------------------------#
-
-*~
-*.orig
-.vagrant
-
-
-#---------------------------------------#
-# Linux Ignores                         #
-#---------------------------------------#
-
-# KDE directory preferences
-.directory
-
-
-#---------------------------------------#
-# OSX Ignores                           #
-#---------------------------------------#
-
-.DS_Store
+# OS
+#
+# Ref: https://github.com/github/gitignore/blob/master/Global/macOS.gitignore
+# Ref: https://github.com/github/gitignore/blob/master/Global/Windows.gitignore
+# Ref: https://github.com/github/gitignore/blob/master/Global/Linux.gitignore
+.DS_STORE
 .AppleDouble
 .LSOverride
 .localized
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+ 
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
 
 # Icon must end with two \r
 Icon
@@ -89,17 +40,26 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+# Editors
+#
+# Ref: https://github.com/github/gitignore/blob/master/Global
+# Ref: https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
+# Ref: https://github.com/github/gitignore/blob/master/Global/VisualStudioCode.gitignore
+.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
-#---------------------------------------#
-# Windows Ignores                       #
-#---------------------------------------#
+# Dependencies
+node_modules
 
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# Compiled files
+scripts
 
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# output
+/.temp
+/.tmp
+/build
+/dist

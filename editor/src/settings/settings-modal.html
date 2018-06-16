@@ -1,0 +1,28 @@
+<template>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" ref="modal">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Project settings</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="project-name" class="col-form-label">Project name:</label>
+                        <input class="form-control" type="text" id="project-name" placeholder="Enter a project name" value.two-way="projectName">
+                    </div>
+                    <div class="form-group">
+                        <label for="project-name" class="col-form-label">Starting step:</label>
+                        <select class="form-control" value.two-way="startingStep">
+                            <option value="" hidden selected disabled>Select a step</option>
+                            <option repeat.for="step of steps" value="${step.name}">${step.name}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" click.delegate="close()">Close</button>
+                    <button type="button" class="btn btn-primary" click.delegate="save()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

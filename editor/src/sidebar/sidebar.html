@@ -1,0 +1,34 @@
+<template>
+    <require from="./paragraphs/paragraph-template-selector"></require>
+    <require from="../expander/expander"></require>
+    <require from="../context-menu/context-menu"></require>
+
+    <context-menu view-model.ref="contextMenuViewModel">
+        <ul>
+            <li click.delegate="newTextParagraph()">New text paragraph</li>
+            <li click.delegate="newPathParagraph()">New path</li>
+        </ul>
+    </context-menu>
+
+    <div class="sidebar" ref="sidebar">
+        <div class="input-field">
+            <label>Step name:</label>
+            <input class="form-control" type="text" placeholder="The name of the step" value.two-way="stepName">
+        </div>
+        <div class="input-field">
+            <label>Paragraphs:</label>
+            <ul class="paragraphs" ref="sortable">
+                <li repeat.for="paragraph of step.paragraphs" class="sortable-item">
+                    <paragraph-template-selector paragraph.bind="paragraph" remove.to-view="remove"></paragraph-template-selector>
+                </li>
+            </ul>
+            <button class="form-control add-button" click.trigger="openNewParagraphContextMenu($event)"><i class="fas fa-plus"></i></button>
+        </div>
+        <expander>
+            <div class="additionnal-params">
+                <div class="sub-title">On display:</div>
+                <textarea class="form-control" placeholder="The name of the step"></textarea>
+            </div>
+        </expander>
+    </div>
+</template>

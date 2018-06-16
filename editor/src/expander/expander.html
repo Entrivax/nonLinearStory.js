@@ -1,0 +1,6 @@
+<template>
+    <div class="expander ${opened ? '' : 'collapsed'}" ref="toggleButton"><i class="fas fa-angle-down"></i></div>
+    <div class="expansion" ref="content" style="display:none;">
+        <slot></slot>
+    </div>
+</template>

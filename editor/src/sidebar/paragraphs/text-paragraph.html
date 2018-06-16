@@ -1,0 +1,16 @@
+<template class="text-element">
+    <require from="../../expander/expander"></require>
+
+    <i class="fas fa-sort sort-handle"></i> <span>Text:</span>
+    <span class="remove-button" click.trigger="remove(paragraph)"><i class="fas fa-times"></i></span>
+    <div class="path-params">
+        <div class="sub-title">Text:</div>
+        <textarea class="form-control" value.two-way="paragraph.text"></textarea>
+        <input type="checkbox" class="is-text-js" checked.two-way="paragraph.isTextJavascript"> <span>Is text JavaScript</span>
+
+        <expander>
+            <div class="sub-title">Is visible:</div>
+            <textarea class="form-control" placeholder="Javascript code here... (must return boolean)" value.two-way="paragraph.isVisibleJavascript"></textarea>
+        </expander>
+    </div>
+</template>
