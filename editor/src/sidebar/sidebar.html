@@ -26,8 +26,10 @@
         </div>
         <expander>
             <div class="additionnal-params">
-                <div class="sub-title">On display:</div>
-                <textarea class="form-control" placeholder="The name of the step"></textarea>
+                <div class="sub-title">On pre-display:</div>
+                <textarea class="form-control" placeholder="Javascript code to execute just before displaying the step." value.two-way="step.onPreDisplayEvent"></textarea>
+                <div class="sub-title">On displayed:</div>
+                <textarea class="form-control" placeholder="Javascript code to execute when the step has been displayed." value.two-way="step.onDisplayedEvent"></textarea>
             </div>
         </expander>
     </div>

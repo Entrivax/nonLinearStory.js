@@ -48,7 +48,19 @@
                 ),
                 <% } %>
             <% }) %>
-            ]),
+            ],
+            function(event) {
+                var nls = event.nlsInstance;
+                <% if (step.onPreDisplayEvent) { %>
+                    <%= step.onPreDisplayEvent %>
+                <% } %>
+            },
+            function(event) {
+                var nls = event.nlsInstance;
+                <% if (step.onDisplayedEvent) { %>
+                    <%= step.onDisplayedEvent %>
+                <% } %>
+            }),
         <% }) %>
         ]);
 

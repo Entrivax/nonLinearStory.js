@@ -58,8 +58,6 @@
             this.previousStep = previousStep;
             this.currentStep = currentStep;
             this.nlsInstance = nlsInstance;
-
-            return this;
         }
 
         /**
@@ -124,6 +122,9 @@
 
                 shownElements = [];
                 canUseAction = true;
+                
+                if (typeof step.onPreDisplay === 'function')
+                    step.onPreDisplay(new NLSStepChangeEvent(lastStep ? lastStep.name : undefined, currentStep ? currentStep.name : undefined, _self));
 
                 var i;
                 for (i = 0; i < step.elements.length; i++) {
@@ -137,7 +138,7 @@
                             outAnimationDuration: _self.options.outAnimationDuration,
                             inAnimationClass: _self.options.inAnimationClass,
                             inAnimationDuration: _self.options.inAnimationDuration,
-                        }
+                        };
 
                         if (typeof e === 'string') {
                             var elemToAdd = $('<div class="paragraph"></div>');
@@ -238,8 +239,8 @@
                     })(i);
                 }
                 
-                if (typeof step.onDisplay === 'function')
-                    step.onDisplay(new NLSStepChangeEvent(lastStep ? lastStep.name : undefined, currentStep ? currentStep.name : undefined, _self));
+                if (typeof step.onDisplayed === 'function')
+                    step.onDisplayed(new NLSStepChangeEvent(lastStep ? lastStep.name : undefined, currentStep ? currentStep.name : undefined, _self));
             }
 
             $.when.apply(null, deferreds).done(onDone);
@@ -349,12 +350,14 @@ function NLSAction(html, goToStep, onClick, isVisible, selector, outAnimationCla
  * @constructor NLSStep
  * @param {string} name The name of the step
  * @param {Array<string | HtmlToDisplayCallback | NLSText | NLSAction>} elements The html representing the step, or actions, or a function returning the html to display or an action
- * @param {function(NLSStepChangeEvent)} [onDisplay] Function to execute when step is displayed
+ * @param {function(NLSStepChangeEvent)} [onPreDisplay] Function to execute just before display the step
+ * @param {function(NLSStepChangeEvent)} [onDisplayed] Function to execute when step is displayed
  */
-function NLSStep(name, elements, onDisplay) {
+function NLSStep(name, elements, onPreDisplay, onDisplayed) {
     this.name = name;
     this.elements = elements;
-    this.onDisplay = onDisplay;
+    this.onPreDisplay = onPreDisplay;
+    this.onDisplayed = onDisplayed;
 
     return this;
 }

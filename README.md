@@ -143,11 +143,12 @@ new NLSStep('step2', [
 
 - `steps` => Array<NLSStep>, list of steps of the story
 
-#### `NLSStep(name, elements, onDisplay)`
+#### `NLSStep(name, elements, onPreDisplay, onDisplayed)`
 
 - `name` => string, the name of the step
 - `elements` => Array<string | function(NonLinearStory):string | NLSText | NLSAction>, list of the elements to show
-- `onDisplay` => function(NLSStepChangeEvent), ***optional***, function to execute when the step is displayed, called after DOM modification
+- `onPreDisplay` => function(NLSStepChangeEvent), ***optional***, function to execute just before display the step, called before DOM modification
+- `onDisplayed` => function(NLSStepChangeEvent), ***optional***, function to execute when the step is displayed, called after DOM modification
 
 #### `NLSAction(html, goToStep, onClick, isVisible, selector, outAnimationClass, outAnimationDuration, inAnimationClass, inAnimationDuration)`
 

@@ -22,7 +22,8 @@ export class ProjectJsonSerializationService {
             let localStep = <Step>localProject.steps[i];
             let step = new Step();
             step.name = localStep.name;
-            step.onDisplayEvent = localStep.onDisplayEvent;
+            step.onDisplayedEvent = localStep.onDisplayedEvent;
+            step.onPreDisplayEvent = localStep.onPreDisplayEvent;
             step.x = localStep.x;
             step.y = localStep.y;
             for (let j = 0; j < localStep.paragraphs.length; j++) {
