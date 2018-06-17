@@ -1,5 +1,5 @@
 import { ProjectManagerService } from 'services/ProjectManagerService';
-import { singleton, inject, TaskQueue } from 'aurelia-framework';
+import { inject, TaskQueue } from 'aurelia-framework';
 import { SettingsModalService } from 'settings/settings-modal-service';
 import { Step } from 'models/project/steps/Step';
 
@@ -7,6 +7,7 @@ import { Step } from 'models/project/steps/Step';
 export class SettingsModal {
     private projectName: string;
     private startingStep: string;
+    private customStyle: string;
     private modal: HTMLElement;
     private steps: Step[];
 
@@ -31,6 +32,7 @@ export class SettingsModal {
         this.projectName = project.settings.projectName;
         this.steps = project.steps;
         this.startingStep = project.settings.startingStep;
+        this.customStyle = project.settings.customStyle;
         let $modal = $(this.modal);
         $modal.modal('show');
     }
@@ -44,6 +46,8 @@ export class SettingsModal {
         let project = this.projectManagerService.getProject();
         project.settings.projectName = this.projectName;
         project.settings.startingStep = this.startingStep;
+        project.settings.customStyle = this.customStyle;
+        this.projectManagerService.requestSave();
         let $modal = $(this.modal);
         $modal.modal('hide');
         this.projectManagerService.requestRedraw();

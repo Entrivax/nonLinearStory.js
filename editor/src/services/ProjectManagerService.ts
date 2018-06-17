@@ -68,6 +68,10 @@ export class ProjectManagerService {
         }
     }
 
+    requestSave() {
+        this.projectLocalStorageService.save(this.project);
+    }
+
     registerSelectStepEventListener(listener: (selectedSteps: Step[]) => void) {
         if (this.selectStepEventListeners.indexOf(listener) < 0) {
             this.selectStepEventListeners.push(listener);
