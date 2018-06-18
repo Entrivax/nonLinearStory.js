@@ -2,7 +2,7 @@ import { ProjectManagerService } from 'services/ProjectManagerService';
 import { inject, transient } from 'aurelia-framework';
 import { Vector2 } from 'models/math/Vector2';
 import { Step } from 'models/project/steps/Step';
-import { gridSize, CanvasMaths } from 'canvas/util/canvas-maths';
+import { gridSize, CanvasMaths } from 'canvas/util/CanvasMaths';
 
 @inject(ProjectManagerService, CanvasMaths)
 @transient()

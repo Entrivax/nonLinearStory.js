@@ -1,6 +1,6 @@
 import { Project } from 'models/project/Project';
 import { singleton, inject } from 'aurelia-framework';
-import { CanvasRenderer } from 'canvas/renderer/canvas-renderer';
+import { CanvasRenderer } from 'canvas/renderer/CanvasRenderer';
 import { Step } from 'models/project/steps/Step';
 import { Vector2 } from 'models/math/Vector2';
 import { PathParagraphModel } from 'models/project/steps/paragraphs/PathParagraphModel';

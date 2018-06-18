@@ -1,5 +1,5 @@
 import { inject } from 'aurelia-framework';
-import { SettingsModalService } from 'settings/settings-modal-service';
+import { SettingsModalService } from 'settings/SettingsModalService';
 import { ProjectCompilerService } from 'services/ProjectCompilerService';
 import { ProjectManagerService } from 'services/ProjectManagerService';
 import { ProjectDiskService } from 'services/ProjectDiskService';

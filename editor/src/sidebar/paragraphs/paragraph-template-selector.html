@@ -1,7 +1,0 @@
-<template>
-    <require from="./text-paragraph"></require>
-    <require from="./path-paragraph"></require>
-
-    <text-paragraph if.bind="paragraph.type === 'text'" paragraph.two-way="paragraph" remove.to-view="remove"></text-paragraph>
-    <path-paragraph if.bind="paragraph.type === 'path'" paragraph.two-way="paragraph" remove.to-view="remove"></path-paragraph>
-</template>

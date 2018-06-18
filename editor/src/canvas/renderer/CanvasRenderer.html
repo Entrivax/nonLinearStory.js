@@ -1,0 +1,10 @@
+<template>
+    <require from="../../context-menu/ContextMenu"></require>
+
+    <context-menu view-model.ref="contextMenuViewModel">
+        <ul>
+            <li click.delegate="newStep()">New step</li>
+        </ul>
+    </context-menu>
+    <canvas ref="grid" id="grid" tabindex="1">Your browser does not support the HTML5 canvas</canvas>
+</template>

@@ -1,7 +1,7 @@
 import { inject, TaskQueue } from 'aurelia-framework';
 import { Step } from 'models/project/steps/Step';
 import { ProjectManagerService } from 'services/ProjectManagerService';
-import { ContextMenu } from 'context-menu/context-menu';
+import { ContextMenu } from 'context-menu/ContextMenu';
 import { Vector2 } from 'models/math/Vector2';
 import { TextParagraphModel } from 'models/project/steps/paragraphs/TextParagraphModel';
 import { PathParagraphModel } from 'models/project/steps/paragraphs/PathParagraphModel';
