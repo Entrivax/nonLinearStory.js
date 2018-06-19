@@ -60,7 +60,7 @@ export class ProjectCompilerService {
         jsdir.file('non-linear-story.js', nlsLibraryTemplate);
         var cssdir = zip.folder('css');
         cssdir.file('style.css', project.settings.customStyle);
-        zip.generateAsync({type: 'blob'}).then((blob) => this.fileSaveService.saveFile(blob, 'build.zip'));
+        zip.generateAsync({type: 'blob'}).then((blob) => this.fileSaveService.saveFile(blob, (project.settings.projectName || 'build') + '.zip'));
     }
 
     compileStory(project: Project): string {

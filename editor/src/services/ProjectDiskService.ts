@@ -30,6 +30,6 @@ export class ProjectDiskService {
     }
 
     save(project: Project) {
-        this.fileSaveService.saveFile(new Blob([ this.projectJsonSerializationService.serialize(project) ], { type: 'application/json' }), 'project.json')
+        this.fileSaveService.saveFile(new Blob([ this.projectJsonSerializationService.serialize(project) ], { type: 'application/json' }), (project.settings.projectName || 'project') + '.json')
     }
 }
