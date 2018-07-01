@@ -14,6 +14,10 @@ export class ProjectJsonSerializationService {
         let project = new Project();
         let localProject = JSON.parse(jsonProject);
         
+        if (!localProject) {
+            return null;
+        }
+
         for (let key in localProject.settings) {
             project.settings[key] = localProject.settings[key];
         }

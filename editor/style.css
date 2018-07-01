@@ -295,3 +295,58 @@ body {
 .btn, .modal-content {
     border-radius: 0;
 }
+
+
+/****************************/
+/*       NOTIFICATIONS      */
+/****************************/
+
+.notifications-container {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    max-width: calc(100% - 25px);
+    width: 500px;
+}
+
+.notifications-container .notification {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    color: #000;
+    word-wrap: break-word;
+}
+
+.notifications-container .notification.info {
+    background-color: #C9DCFB;
+    border-color: #5886d4;
+    color: #5886d4;
+}
+
+.notifications-container .notification.error {
+    background-color: #FCCACA;
+    border-color: #D45858;
+    color: #D45858;
+}
+
+.notifications-container .notification.stack-trace {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    background-color: #FCCACA;
+    border-color: #D45858;
+    color: #D45858;
+}
+
+.notifications-container .notification.stack-trace .message {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.notifications-container .notification .remove-button {
+    float: right;
+    cursor: pointer;
+    margin-left: 5px;
+}

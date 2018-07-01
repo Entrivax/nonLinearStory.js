@@ -1,0 +1,10 @@
+<template>
+    <div class="notifications-container">
+        <div repeat.for="notification of notifications">
+            <div class="notification ${notification.type}">
+                <div class="remove-button" click.trigger="removeNotif(notification)"><i class="fas fa-times"></i></div>
+                <span class="message">${notification.message}</span>
+            </div>
+        </div>
+    </div>
+</template>

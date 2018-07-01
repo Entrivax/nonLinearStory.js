@@ -18,7 +18,10 @@ export class ProjectManagerService {
     constructor(private projectLocalStorageService: ProjectLocalStorageService) {
         this.selectStepEventListeners = [];
         this.selectedSteps = [];
-        let project = projectLocalStorageService.load();
+    }
+
+    initialLoad() {
+        let project = this.projectLocalStorageService.load();
         if (!project) {
             this.initProject();
         } else {
