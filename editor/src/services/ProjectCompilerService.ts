@@ -1,3 +1,4 @@
+import { NotificationService } from './NotificationService';
 const previewTemplate = require('raw-loader!../templates/previewOutput.ejs');
 const compiledTemplate = require('raw-loader!../templates/generatedOutput.ejs');
 const storyTemplate = require('raw-loader!../templates/exportationTemplate.ejs');
@@ -7,15 +8,16 @@ import { Project } from 'models/project/Project';
 import { singleton, inject } from 'aurelia-framework';
 import * as _ from 'lodash';
 import { FileSaveService } from './FileSaveService';
+import { NotificationType } from 'models/ui/NotificationModel';
 
 @singleton()
-@inject(FileSaveService)
+@inject(FileSaveService, NotificationService)
 export class ProjectCompilerService {
     private previewTemplateCompiled: _.TemplateExecutor;
     private compiledTemplateCompiled: _.TemplateExecutor;
     private storyTemplate: _.TemplateExecutor;
 
-    constructor(private fileSaveService: FileSaveService) { }
+    constructor(private fileSaveService: FileSaveService, private notificationService: NotificationService) { }
 
     preview(project: Project) {
         if (!this.previewTemplateCompiled) {
@@ -32,11 +34,11 @@ export class ProjectCompilerService {
         let url = URL.createObjectURL(htmlBlob);
         let preview = window.open(url);
         let openDate = new Date();
-        let timer = setInterval(function() { 
+        let timer = setInterval(() => { 
             if (preview.closed) {
                 let closeDate = new Date();
                 if (closeDate.getTime() - openDate.getTime() < 800) {
-                    alert('You seems to have an adblocker which is blocking the preview window. If you want to use this feature, please disable it.');
+                    this.notificationService.openNotification('You seems to have an adblocker which is blocking the preview window. If you want to use this feature, please disable it.', NotificationType.Error);
                 }
                 clearInterval(timer);
                 URL.revokeObjectURL(url);
