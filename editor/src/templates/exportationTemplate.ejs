@@ -13,9 +13,9 @@
                     <% } else { %>
                     '<%= escapeString(paragraph.text) %>',
                     <% } %>
-                    <% if (paragraph.isVisible) { %>
+                    <% if (paragraph.isVisibleJavascript) { %>
                     function(nls) {
-                        <%= paragraph.isVisible %>
+                        <%= paragraph.isVisibleJavascript %>
                     }
                     <% } else { %>
                     undefined
@@ -31,16 +31,16 @@
                     '<%= escapeString(paragraph.text) %>',
                     <% } %>
                     '<%= escapeString(paragraph.toStep) %>',
-                    <% if (paragraph.onClick) { %>
+                    <% if (paragraph.onClickEvent) { %>
                     function(nls) {
-                        <%= paragraph.onClick %>
+                        <%= paragraph.onClickEvent %>
                     },
                     <% } else { %>
                     undefined,
                     <% } %>
-                    <% if (paragraph.isVisible) { %>
+                    <% if (paragraph.isVisibleJavascript) { %>
                     function(nls) {
-                        <%= paragraph.isVisible %>
+                        <%= paragraph.isVisibleJavascript %>
                     }
                     <% } else { %>
                     undefined
