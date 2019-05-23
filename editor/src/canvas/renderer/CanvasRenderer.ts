@@ -7,6 +7,7 @@ import { Project } from 'models/project/Project';
 import { ContextMenu } from 'context-menu/ContextMenu';
 import { PathParagraphModel } from 'models/project/steps/paragraphs/PathParagraphModel';
 import { CanvasMaths, gridSize, stepWidth, stepHeight } from 'canvas/util/CanvasMaths';
+import { Rectangle } from 'models/math/Rectangle';
 
 @inject(TaskQueue, CanvasController, ProjectManagerService, CanvasMaths)
 export class CanvasRenderer {
@@ -65,7 +66,7 @@ export class CanvasRenderer {
         this.redraw();
     }
 
-    private newStep() {
+    public newStep() {
         this.canvasController.onNewStep(this.openContextMenuPosition);
         this.contextMenuViewModel.hide();
     }
@@ -75,10 +76,12 @@ export class CanvasRenderer {
         let zoom = this.canvasController.getZoom();
         let project = this.projectManagerService.getProject();
         let selectedSteps = this.projectManagerService.getSelectedSteps();
+        let selectionRectangle = this.canvasController.getSelectionZone();
 
         this.drawGrid(offset, zoom);
         this.drawSteps(offset, zoom, project, selectedSteps);
         this.drawLinks(offset, zoom, project);
+        this.drawSelectionRectangle(selectionRectangle);
     }
 
     private drawGrid(offset: Vector2, zoom: number) {
@@ -160,6 +163,16 @@ export class CanvasRenderer {
                     this.canvas_arrow(p1.x, p1.y, p2.x, p2.y, zoom);
                 }
             }
+        }
+    }
+
+    private drawSelectionRectangle(selectionRectangle: Rectangle) {
+        if (selectionRectangle) {
+            this.context.lineWidth = 1;
+            this.context.strokeStyle = 'rgba(98, 174, 228, 0.23)';
+            this.context.fillStyle = 'rgba(98, 174, 228, 0.1)';
+            this.context.fillRect(selectionRectangle.x, selectionRectangle.y, selectionRectangle.width, selectionRectangle.height);
+            this.context.strokeRect(selectionRectangle.x, selectionRectangle.y, selectionRectangle.width, selectionRectangle.height);
         }
     }
 

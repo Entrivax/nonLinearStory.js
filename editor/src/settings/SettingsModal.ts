@@ -9,7 +9,7 @@ export class SettingsModal {
     private startingStep: string;
     private customStyle: string;
     private modal: HTMLElement;
-    private steps: Step[];
+    public steps: Step[];
 
     constructor(private projectManagerService: ProjectManagerService, private taskQueue: TaskQueue, private settingsModalService: SettingsModalService) {
         this.settingsModalService.registerModal(this);

@@ -19,7 +19,7 @@ export class ProjectDiskService {
 
             reader.onload = function() {
                 try {
-                    callback(_this_.projectJsonSerializationService.deserialize(reader.result));
+                    callback(_this_.projectJsonSerializationService.deserialize(<string>reader.result));
                 } catch (exception) {
                     _this_.notificationService.openNotification(exception, NotificationType.StackTrace);
                 }

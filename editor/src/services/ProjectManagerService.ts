@@ -111,6 +111,23 @@ export class ProjectManagerService {
         }
     }
 
+    selectSteps(steps: Step[]) {
+        for (let step of steps) {
+            var indexOfStep = this.selectedSteps.indexOf(step)
+            if (indexOfStep === -1) {
+                this.selectedSteps.push(step);
+            }
+        }
+
+        this.selectStepEventListeners.forEach((listener) => {
+            listener(this.selectedSteps);
+        });
+
+        if (this.selectedSteps.length === 0) {
+            this.projectLocalStorageService.save(this.project);
+        }
+    }
+
     renameStep(step: Step, newName: string) {
         if (this.project.settings.startingStep === step.name && step.name != '') {
             this.project.settings.startingStep = newName;
