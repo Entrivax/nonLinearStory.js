@@ -119,6 +119,9 @@ export class CanvasRenderer {
             if (step.name === project.settings.startingStep) {
                 this.context.strokeStyle = '#43b581';
             }
+            if (step.paragraphs.length === 0 || !step.paragraphs.find((p) => p.text && p.text.length > 0 && p.text.trim().length > 0)) {
+                this.context.strokeStyle = '#ff9524';
+            }
             if (selectedSteps.indexOf(step) !== -1) {
                 this.context.strokeStyle = '#b9bbbe';
             }

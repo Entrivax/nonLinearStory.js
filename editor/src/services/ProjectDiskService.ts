@@ -13,20 +13,19 @@ export class ProjectDiskService {
     constructor(private projectJsonSerializationService: ProjectJsonSerializationService, private fileSaveService: FileSaveService, private notificationService: NotificationService) { }
 
     open(callback: (project: Project) => void): void {
-        let _this_ = this;
-        this.fileInput.change(function() {
+        this.fileInput.change(() => {
             var reader = new FileReader();
 
-            reader.onload = function() {
+            reader.onload = () => {
                 try {
-                    callback(_this_.projectJsonSerializationService.deserialize(<string>reader.result));
+                    callback(this.projectJsonSerializationService.deserialize(<string>reader.result));
                 } catch (exception) {
-                    _this_.notificationService.openNotification(exception, NotificationType.StackTrace);
+                    this.notificationService.openNotification(exception, NotificationType.StackTrace);
                 }
             }
 
-            reader.readAsText(this.files[0]);
-            _this_.fileInput = $('<input type="file" accept=".json">') as JQuery<HTMLInputElement>;
+            reader.readAsText(this.fileInput[0].files[0]);
+            this.fileInput = $('<input type="file" accept=".json">') as JQuery<HTMLInputElement>;
         })
         this.fileInput.click();
     }
