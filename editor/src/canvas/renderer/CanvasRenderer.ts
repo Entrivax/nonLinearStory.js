@@ -127,11 +127,11 @@ export class CanvasRenderer {
             if (step.paragraphs.length === 0 || !step.paragraphs.find((p) => p.text && p.text.length > 0 && p.text.trim().length > 0)) {
                 this.context.strokeStyle = '#ff9524';
             }
-            if (selectedSteps.indexOf(step) !== -1) {
-                this.context.strokeStyle = '#b9bbbe';
-            }
             if (step.paragraphs.find((p) => p.type === 'path' && ((<PathParagraphModel>p).toStep === '' || (<PathParagraphModel>p).toStep === null))) {
                 this.context.strokeStyle = '#f04747';
+            }
+            if (selectedSteps.indexOf(step) !== -1) {
+                this.context.strokeStyle = '#b9bbbe';
             }
             this.context.beginPath();
             this.context.rect(step.x * gridSizeZoommed + offset.x - 0.5, step.y * gridSizeZoommed + offset.y - 0.5, stepWidth * gridSizeZoommed, stepHeight * gridSizeZoommed);
