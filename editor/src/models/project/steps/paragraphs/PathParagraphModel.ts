@@ -6,7 +6,7 @@ export class PathParagraphModel implements IParagraph {
     isTextJavascript: boolean;
     onClickEvent: string;
     toStep: string;
-    type: string;
+    type: 'path';
 
     constructor(text: string, toStep: string, isTextJavascript: boolean, isVisibleJavascript: string, onClickEvent: string) {
         this.type = 'path';

@@ -116,6 +116,11 @@ export class CanvasRenderer {
             this.context.fillStyle = '#b9bbbe';
             this.context.fillText(step.name, step.x * gridSizeZoommed + offset.x, step.y * gridSizeZoommed + offset.y + fontSize, stepWidth * gridSizeZoommed);
             this.context.strokeStyle = '#1f2326';
+            this.context.setLineDash([]);
+            if (!step.paragraphs.find((p) => p.type === 'path')) {
+                this.context.setLineDash([5]);
+                this.context.strokeStyle = '#7289da';
+            }
             if (step.name === project.settings.startingStep) {
                 this.context.strokeStyle = '#43b581';
             }
@@ -125,11 +130,15 @@ export class CanvasRenderer {
             if (selectedSteps.indexOf(step) !== -1) {
                 this.context.strokeStyle = '#b9bbbe';
             }
+            if (step.paragraphs.find((p) => p.type === 'path' && ((<PathParagraphModel>p).toStep === '' || (<PathParagraphModel>p).toStep === null))) {
+                this.context.strokeStyle = '#f04747';
+            }
             this.context.beginPath();
             this.context.rect(step.x * gridSizeZoommed + offset.x - 0.5, step.y * gridSizeZoommed + offset.y - 0.5, stepWidth * gridSizeZoommed, stepHeight * gridSizeZoommed);
             this.context.stroke();
             this.context.closePath();
         }
+        this.context.setLineDash([]);
     }
 
     private drawLinks(offset: Vector2, zoom: number, project: Project) {

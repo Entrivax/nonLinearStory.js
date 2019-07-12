@@ -4,7 +4,7 @@ export class TextParagraphModel implements IParagraph {
     text: string;
     isVisibleJavascript: string;
     isTextJavascript: boolean;
-    type: string;
+    type: 'text';
 
     constructor(text: string, isTextJavascript: boolean, isVisibleJavascript: string) {
         this.type = 'text';

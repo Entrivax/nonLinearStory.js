@@ -3,5 +3,5 @@ export interface IParagraph {
     isVisibleJavascript: string;
     isTextJavascript: boolean;
 
-    type: string;
+    type: 'path'|'text';
 }
