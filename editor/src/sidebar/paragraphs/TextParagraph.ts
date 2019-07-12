@@ -4,4 +4,5 @@ import { TextParagraphModel } from 'models/project/steps/paragraphs/TextParagrap
 export class TextParagraph {
     @bindable() paragraph: TextParagraphModel;
     @bindable() remove: any;
+    @bindable() edit: (paragraph: TextParagraphModel) => void;
 }

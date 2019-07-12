@@ -19,7 +19,7 @@
             <label>Paragraphs:</label>
             <ul class="paragraphs" ref="sortable">
                 <li repeat.for="paragraph of step.paragraphs" class="sortable-item">
-                    <paragraph-template-selector paragraph.bind="paragraph" remove.to-view="remove"></paragraph-template-selector>
+                    <paragraph-template-selector paragraph.bind="paragraph" remove.to-view="remove" edit.to-view="edit"></paragraph-template-selector>
                 </li>
             </ul>
             <button class="form-control add-button" click.trigger="openNewParagraphContextMenu($event)"><i class="fas fa-plus"></i></button>

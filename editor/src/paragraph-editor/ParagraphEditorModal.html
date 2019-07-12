@@ -1,0 +1,20 @@
+<template>
+    <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" ref="modal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Paragraph edition</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="mh-100 h-100 form-control" contenteditable="true" innerHtml.bind="paragraph"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" click.delegate="close()">Close</button>
+                    <button type="button" class="btn btn-primary" click.delegate="save()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

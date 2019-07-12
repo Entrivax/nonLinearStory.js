@@ -2,6 +2,6 @@
     <require from="./TextParagraph"></require>
     <require from="./PathParagraph"></require>
 
-    <text-paragraph if.bind="paragraph.type === 'text'" paragraph.two-way="paragraph" remove.to-view="remove"></text-paragraph>
+    <text-paragraph if.bind="paragraph.type === 'text'" paragraph.two-way="paragraph" remove.to-view="remove" edit.to-view="edit"></text-paragraph>
     <path-paragraph if.bind="paragraph.type === 'path'" paragraph.two-way="paragraph" remove.to-view="remove"></path-paragraph>
 </template>

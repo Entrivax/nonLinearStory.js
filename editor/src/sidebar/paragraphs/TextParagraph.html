@@ -4,6 +4,7 @@
     <i class="fas fa-sort sort-handle"></i> <span>Text:</span>
     <span class="remove-button" click.trigger="remove(paragraph)"><i class="fas fa-times"></i></span>
     <div class="path-params">
+        <div if.bind="!paragraph.isTextJavascript" class="float-right clickable" click.trigger="edit(paragraph)"><i class="fas fa-expand-arrows-alt"></i></div>
         <div class="sub-title">Text:</div>
         <textarea class="form-control ${paragraph.isTextJavascript ? 'code-area': ''}" value.two-way="paragraph.text"></textarea>
         <input type="checkbox" class="is-text-js" checked.two-way="paragraph.isTextJavascript"> <span>Is text JavaScript</span>

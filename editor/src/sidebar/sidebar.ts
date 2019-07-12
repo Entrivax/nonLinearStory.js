@@ -1,4 +1,4 @@
-import { inject, TaskQueue } from 'aurelia-framework';
+import { inject, TaskQueue, autoinject } from 'aurelia-framework';
 import { Step } from 'models/project/steps/Step';
 import { ProjectManagerService } from 'services/ProjectManagerService';
 import { ContextMenu } from 'context-menu/ContextMenu';
@@ -6,8 +6,9 @@ import { Vector2 } from 'models/math/Vector2';
 import { TextParagraphModel } from 'models/project/steps/paragraphs/TextParagraphModel';
 import { PathParagraphModel } from 'models/project/steps/paragraphs/PathParagraphModel';
 import { IParagraph } from 'models/project/steps/paragraphs/IParagraph';
+import { ParagraphEditorModalService } from 'paragraph-editor/ParagraphEditorModalService';
 
-@inject(ProjectManagerService, TaskQueue)
+@autoinject()
 export class Sidebar {
     step: Step;
     sidebar: HTMLElement;
@@ -15,10 +16,12 @@ export class Sidebar {
     sortable: HTMLElement;
     sortableInstance: Sortable;
     remove: (IParagraph) => void;
+    edit: (IParagraph) => void;
 
-    constructor(private projectManagerService: ProjectManagerService, private taskQueue: TaskQueue) {
+    constructor(private projectManagerService: ProjectManagerService, private paragraphEditorModalService: ParagraphEditorModalService, private taskQueue: TaskQueue) {
         this.projectManagerService.registerSelectStepEventListener(this.onSelectStep.bind(this));
         this.remove = (paragraph: IParagraph) => this.removeParagraph(paragraph);
+        this.edit = (paragraph: IParagraph) => this.editParagraph(paragraph);
     }
 
     get stepName() {
@@ -74,6 +77,13 @@ export class Sidebar {
             }
         }
         this.projectManagerService.requestRedraw();
+    }
+
+    editParagraph(paragraph: IParagraph) {
+        this.paragraphEditorModalService.show(paragraph.text).then((result) => {
+            paragraph.text = result;
+            this.projectManagerService.requestRedraw();
+        });
     }
 
     changeOrder(event) {
