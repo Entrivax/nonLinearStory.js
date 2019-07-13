@@ -41,7 +41,7 @@ export class ParagraphEditorModal {
         }
         let $modal = $(this.modal);
         $modal.modal('hide');
-        this.promiseResolve(this.originalParagraph.replace(/<br>/gm, '\n').replace(/<div>(\n+)<\/div>/gm, '$1'));
+        this.promiseResolve(this.originalParagraph.replace(/<br>/gm, '\n'));
         this.currentPromise = null;
         this.promiseResolve = null;
     }
@@ -52,7 +52,7 @@ export class ParagraphEditorModal {
         }
         let $modal = $(this.modal);
         $modal.modal('hide');
-        this.promiseResolve(this.paragraph.replace(/<br>/gm, '\n').replace(/<div>(\n+)<\/div>/gm, '$1'));
+        this.promiseResolve(this.paragraph.replace(/<br>/gm, '\n'));
         this.currentPromise = null;
         this.promiseResolve = null;
     }
